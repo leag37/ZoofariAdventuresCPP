@@ -26,3 +26,8 @@
 *.exe
 *.out
 *.app
+
+# Directories
+Build
+Docs/html
+Docs/latex
