@@ -12,32 +12,32 @@ ZOOFARI_BEGIN_NAMESPACE(zoofari)
  *	@{
  */
 
-void * operator new(size_t inSize)
+inline void * operator new(size_t inSize)
 {
 	return malloc(inSize);
 }
 
-void * operator new(size_t /*inSize*/, void * inPtr)
+inline void * operator new(size_t /*inSize*/, void * inPtr)
 {
 	return inPtr;
 }
 
-void * operator new[](size_t inSize)
+inline void * operator new[](size_t inSize)
 {
 	return malloc(inSize);
 }
 
-void * operator new[](size_t /*inSize*/, void * inPtr)
+inline void * operator new[](size_t /*inSize*/, void * inPtr)
 {
 	return inPtr;
 }
 
-void operator delete(void * inPtr)
+inline void operator delete(void * inPtr)
 {
 	free(inPtr);
 }
 
-void operator delete[](void * inPtr)
+inline void operator delete[](void * inPtr)
 {
 	free(inPtr);
 }
