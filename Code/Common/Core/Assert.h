@@ -9,4 +9,6 @@ ZOOFARI_BEGIN_NAMESPACE(zoofari)
 
 #define ZOOFARI_ASSERT(_statement) assert(_statement);
 
+#define ZOOFARI_ERROR(x) assert(false);
+
 ZOOFARI_END_NAMESPACE()

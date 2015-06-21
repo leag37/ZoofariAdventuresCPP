@@ -12,7 +12,7 @@
 #include ZOOFARI_INCLUDE_HEADER(Memory\CNoAllocatorPolicy)
 
 
-//#include <vector>
+#include <vector>
 //#include <memory>
 //#include <utility>
 
@@ -40,10 +40,16 @@ CGameRoot::~CGameRoot()
 //*************************************************************************************************
 void CGameRoot::Initialize()
 {
+	CRoot::Initialize();
+
 	common::core::CUniquePtr<Hello> pHello = common::core::CCreate<Hello>();	
 	common::core::CUniquePtr<Hello> pHello2 = common::core::CCreate<Hello>(1);
 	
 	pHello = move(pHello2);
+
+	std::vector<int> vInt;
+	vInt.emplace_back(1);
+	vInt.emplace_back(2);
 
 	// Setup FSM
 	//CSharedPtr<CSystemFsmStartState> pStartState(CMake<CStartState>());
@@ -56,7 +62,9 @@ void CGameRoot::Initialize()
 
 //*************************************************************************************************
 void CGameRoot::Shutdown()
-{}
+{
+	CRoot::Shutdown();
+}
 
 ZOOFARI_END_NAMESPACE()
 ZOOFARI_END_NAMESPACE()
