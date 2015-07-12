@@ -42,14 +42,17 @@ void CGameRoot::Initialize()
 {
 	CRoot::Initialize();
 
-	common::core::CUniquePtr<Hello> pHello = common::core::CCreate<Hello>();	
-	common::core::CUniquePtr<Hello> pHello2 = common::core::CCreate<Hello>(1);
-	
-	pHello = move(pHello2);
+	//common::core::CUniquePtr<Hello> pHello = common::core::CCreate<Hello>();	
+	//common::core::CUniquePtr<Hello> pHello2 = common::core::CCreate<Hello>(1);
+	//
+	//pHello = move(pHello2);
 
-	std::vector<int> vInt;
-	vInt.emplace_back(1);
-	vInt.emplace_back(2);
+	std::vector<s32> vInt;
+
+	for (s32 i(0); i < 4000000000; ++i)
+	{
+		vInt.emplace_back(i);
+	}
 
 	// Setup FSM
 	//CSharedPtr<CSystemFsmStartState> pStartState(CMake<CStartState>());

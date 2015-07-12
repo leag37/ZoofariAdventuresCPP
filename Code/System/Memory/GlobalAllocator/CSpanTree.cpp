@@ -10,19 +10,40 @@ ZOOFARI_BEGIN_NAMESPACE(zoofari)
 ZOOFARI_BEGIN_NAMESPACE(system)
 ZOOFARI_BEGIN_NAMESPACE(memory)
 
+CSpanTree::CSpanTree()
+	: m_Head(nullptr)
+	, m_FreeHead(nullptr)
+	, m_AllocatedBytes(0) 
+	, m_NodeBytesToAlloc(0)
+{
+	// Find the least common multiple between CMemConst::PAGE and sizeof(CMemNode)
+	size_t gcd(2);
+	size_t const cMemNodeSize(sizeof(CMemNode));
+	for (size_t gcdCandidate(gcd); gcdCandidate < cMemNodeSize; ++gcdCandidate)
+	{
+		if (((cMemNodeSize % gcdCandidate) == 0) && ((CMemConst::PAGE % gcdCandidate) == 0))
+		{
+			gcd = gcdCandidate;
+		}
+	}
+
+	m_NodeBytesToAlloc = (cMemNodeSize * CMemConst::PAGE) / gcd;
+}
+
 CMemNode* CSpanTree::Allocate(size_t inSizeClass)
 {
 	// Do we have free mem nodes
 	if (m_FreeHead == nullptr)
 	{
-		void* pFreeNodes(AllocateInternal(CMemConst::PAGE));
-		size_t const blocks(CMemConst::PAGE / sizeof(CMemNode));
+		void* pFreeNodes(AllocateInternal(m_NodeBytesToAlloc));
+		size_t const cMemNodeSize(sizeof(CMemNode));
+		size_t const blocks(m_NodeBytesToAlloc / cMemNodeSize);
 		for (size_t i(0); i < blocks; ++i)
 		{
 			CMemNode* node(new (pFreeNodes) CMemNode());
 			node->m_Left = m_FreeHead;
 			m_FreeHead = node;
-			pFreeNodes = node + 1;;
+			pFreeNodes = node + 1;
 		}
 	}
 
@@ -54,11 +75,15 @@ CMemNode* CSpanTree::Find(void* inAddress)
 	bool bFoundNode(false);
 	do
 	{
-		if ((inAddress < result) && (result->m_Left != nullptr))
+		// Compare the memory address to the span. If the address is within the span, return 0. If the 
+		// address is less than the span range, return -1. If the address is greater than the span range, 
+		// return 1.
+		s32 const iCmpSpan(result->InSpan(inAddress));
+		if ((iCmpSpan == -1) && (result->m_Left != nullptr))
 		{
 			result = result->m_Left;
 		}
-		else if ((inAddress >= result) && (result->m_Right != nullptr))
+		else if ((iCmpSpan == 1) && (result->m_Right != nullptr))
 		{
 			result = result->m_Right;
 		}
@@ -103,7 +128,7 @@ void CSpanTree::Insert(CMemNode * inNode)
 	{
 		// Insert the node into the tree
 		CMemNode* curr(m_Head);
-		while (inNode != nullptr)
+		while (curr != nullptr)
 		{
 			// If the memory address is lower, go left
 			if (inNode->m_Span < curr->m_Span)
@@ -117,6 +142,7 @@ void CSpanTree::Insert(CMemNode * inNode)
 				{
 					curr->m_Left = inNode;
 					inNode = nullptr;
+					curr = nullptr;
 				}
 			}
 			// If the address is higher, go right
@@ -131,6 +157,7 @@ void CSpanTree::Insert(CMemNode * inNode)
 				{
 					curr->m_Right = inNode;
 					inNode = nullptr;
+					curr = nullptr;
 				}
 			}
 		}
@@ -166,6 +193,11 @@ void CSpanTree::Release()
 			// Free node
 			FreeInternal(m_Head->m_Span, m_Head->m_PageCount * CMemConst::PAGE);
 
+			// Reset head internals
+			m_Head->m_Span = nullptr;
+			m_Head->m_PageCount = 0;
+			m_Head->m_SizeClass = 0;
+
 			// Remove the head node and add it to the free list
 			m_Head->m_Left = m_FreeHead;
 			m_FreeHead = m_Head;
@@ -175,6 +207,11 @@ void CSpanTree::Release()
 		{
 			// Free node
 			FreeInternal(m_Head->m_Span, m_Head->m_PageCount * CMemConst::PAGE);
+
+			// Reset head internals
+			m_Head->m_Span = nullptr;
+			m_Head->m_PageCount = 0;
+			m_Head->m_SizeClass = 0;
 
 			// Replace the current head with the leaf node
 			pNode->m_Left = m_Head->m_Left == pNode ? nullptr : m_Head->m_Left;
@@ -189,45 +226,63 @@ void CSpanTree::Release()
 
 	// Second, sort free-list by address
 	{
-		CMemNode** pNode(&m_FreeHead);
-		while (*pNode != nullptr)
+		CMemNode** pCurrNode(&m_FreeHead);
+		// Iterate through list
+		while (*pCurrNode != nullptr)
 		{
-			// A left child exists, so compare against left
-			CMemNode* pCurrNode(*pNode);
-			CMemNode* pNextNode((*pNode)->m_Left);
-			while (pNextNode != nullptr)
+			CMemNode* pSmallest = *pCurrNode;
+			CMemNode* pSmallPrev = *pCurrNode;
+
 			{
-				// If the next node address is less than the current node, swap
-				if (pNextNode < *pNode)
+				// Find the smallest address node
+				CMemNode* pNode(*pCurrNode);
+				CMemNode* pNextNode((*pCurrNode)->m_Left);
+				while (pNextNode != nullptr)
 				{
-					// Swap the values. First, let's tell the "current" node what the next node will be pointer to
-					pCurrNode->m_Left = *pNode;
-
-					// Next, store off the left of the source node
-					CMemNode* pLeft((*pNode)->m_Left);
-
-					// Then, override the left of the source node with the left of the next node
-					(*pNode)->m_Left = pNextNode->m_Left;
-
-					// Then, set the left of the next node to the stored off left of the source node
-					pNextNode->m_Left = pLeft;
-
-					// Finally, set the source node to the next node
-					*pNode = pNextNode;
+					if (pNextNode < pSmallest)
+					{
+						pSmallest = pNextNode;
+						pSmallPrev = pNode;
+					}
+					pNextNode = pNextNode->m_Left;
+					pNode = pNode->m_Left;
 				}
-
-				// Advance
-				pCurrNode = pCurrNode->m_Left;
-				pNextNode = pNextNode->m_Left;
 			}
 
-			// Advance pNode
-			pNode = &(*pNode)->m_Left;
+			// Swap with smallest address node
+			if (pSmallest != *pCurrNode)
+			{
+				// Store the current node and next nodes
+				CMemNode* pNextNode = (*pCurrNode)->m_Left;
+				CMemNode* pSmallNext = pSmallest->m_Left;
+
+				// Swap lefts. If this is swapping direct neighbors, set smallest->left to the current node
+				if (pNextNode == pSmallest)
+				{
+					pSmallest->m_Left = *pCurrNode;
+					(*pCurrNode)->m_Left = pSmallNext;
+				}
+				else
+				{
+					pSmallest->m_Left = pNextNode;
+					(*pCurrNode)->m_Left = pSmallNext;
+
+					// Connect the larger node to the slot where the old smallest was
+					pSmallPrev->m_Left = *pCurrNode;
+				}
+				
+
+				// Now move the smallest into the current "head"
+				*pCurrNode = pSmallest;
+			}
+
+			pCurrNode = &(*pCurrNode)->m_Left;
 		}
 	}
 
 	// Third, free all items on free list
-	size_t const cNodesPerPage(CMemConst::PAGE / sizeof(CMemNode));
+	size_t const cMemNodeSize(sizeof(CMemNode));
+	size_t const cNodesPerPage(m_NodeBytesToAlloc / cMemNodeSize);
 	while (m_FreeHead != nullptr)
 	{
 		// Store off head
@@ -240,7 +295,7 @@ void CSpanTree::Release()
 		}
 
 		// Free the current page
-		FreeInternal(pOldHead, CMemConst::PAGE);
+		FreeInternal(pOldHead, m_NodeBytesToAlloc);
 	}
 
 	// At this point, there should be no dynamically allocated bytes

@@ -14,13 +14,13 @@ CGlobalMemHeap::TVoid CGlobalMemHeap::InsertNode(CMemNode* inNode, TCSizeType in
 	ZOOFARI_ASSERT(m_Blocks[inClassIndex] == nullptr);
 
 	// If the size of the class is less than or equal to a page, mark the size class
-	if (inNode->m_PageCount <= 1)
+	if (inNode->m_PageCount == 1)
 	{
 		// Determine the number of chunks to break the node into
 		TCSizeType blockCount(inNode->m_PageCount * CMemConst::PAGE / inSizeClass);
 
 		// Calculate increment interval (number of times a void pointer goes into the size class of choice)
-		TCSizeType increment(inSizeClass / sizeof(TVoidPtr));
+		TCSizeType increment(inSizeClass / sizeof(CMemBlock));
 
 		// Break into blocks
 		CMemBlock* block(nullptr);
@@ -29,6 +29,7 @@ CGlobalMemHeap::TVoid CGlobalMemHeap::InsertNode(CMemNode* inNode, TCSizeType in
 		{
 			block = new(place) CMemBlock();
 			block->m_Next = block + increment;
+			CMemBlock* blah = block + 1;
 			place = block->m_Next;
 		}
 		block->m_Next = nullptr;
@@ -36,9 +37,19 @@ CGlobalMemHeap::TVoid CGlobalMemHeap::InsertNode(CMemNode* inNode, TCSizeType in
 		// Store head block
 		m_Blocks[inClassIndex] = static_cast<CMemBlock*>(inNode->m_Span);
 	}
+	else if (inNode->m_PageCount < 255)
+	{
+		CMemBlock* block(new(inNode->m_Span) CMemBlock());
+		block->m_Next = m_Blocks[inClassIndex];
+		m_Blocks[inClassIndex] = block;
+		
+	}
 	else
 	{
-		m_Blocks[inClassIndex] = new(inNode->m_Span) CMemBlock();
+		CMemBlockHuge* block(new(inNode->m_Span) CMemBlockHuge());
+		block->m_Next = m_Blocks[inClassIndex];
+		block->m_PageCount = inNode->m_PageCount;
+		m_Blocks[inClassIndex] = block;
 	}
 }
 
@@ -58,17 +69,44 @@ CGlobalMemHeap::TVoid CGlobalMemHeap::InsertBlocks(CMemBlock* inBlock, TCSizeTyp
 		pLastBlock->m_Next = pHead;
 
 		// Use compare exchange here to set m_Blocks[] to inBlock when pHead==m_Blocks[]
-		m_Blocks[inClassIndex] = inBlock;
+		m_Blocks[inClassIndex] = inBlock/*pLastBlock*/;
 	} while (false); // TODO
 }
 
-CGlobalMemHeap::TVoidPtr CGlobalMemHeap::GetBlock(TCSizeType inClassIndex)
+CGlobalMemHeap::TVoidPtr CGlobalMemHeap::GetBlock(TCSizeType inSize, TCSizeType inClassIndex)
 { 
 	// If the index is 255, get large mem
 	TVoidPtr mem(nullptr);
 	if (inClassIndex == 255)
 	{
-		ZOOFARI_ERROR("TODO: Not implemented");
+		// Calculate number of pages
+		size_t const uNumPages(inSize / CMemConst::PAGE);
+
+		// Cast the block to a large block (which has some extra data attached such as number of pages, etc.
+		CMemBlockHuge* pHugeBlock(static_cast<CMemBlockHuge*>(m_Blocks[inClassIndex]));
+		CMemBlockHuge* pPreviousBlock(nullptr);
+		while ((pHugeBlock != nullptr) && (pHugeBlock->m_PageCount < uNumPages))
+		{
+			pPreviousBlock = pHugeBlock;
+			pHugeBlock = static_cast<CMemBlockHuge*>(pHugeBlock->m_Next);
+		}
+
+		// If a valid huge block is found, pull it from the list
+		if (pHugeBlock != nullptr)
+		{
+			mem = pHugeBlock;
+
+			// If the previous block does not exist, the selected block was the list start, so just destroy the list
+			if (pPreviousBlock == nullptr)
+			{
+				m_Blocks[inClassIndex] = nullptr;
+			}
+			else
+			{
+				// In this case, the selected block is somewhere in the middle of the list, so just remove it
+				pPreviousBlock->m_Next = pHugeBlock->m_Next;
+			}
+		}
 	}
 	else
 	{

@@ -29,7 +29,7 @@ public:
 
 	TVoid InsertNode(CMemNode* inNode, TCSizeType inSizeClass, TCSizeType inClassIndex);
 	TVoid InsertBlocks(CMemBlock* inBlock, TCSizeType inClassIndex);
-	TVoidPtr GetBlock(TCSizeType inClassIndex);
+	TVoidPtr GetBlock(TCSizeType inSize, TCSizeType inClassIndex);
 
 	void Clean();
 

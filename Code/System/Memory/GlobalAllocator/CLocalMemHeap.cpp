@@ -31,7 +31,34 @@ CLocalMemHeap::TVoidPtr CLocalMemHeap::GetMem(TCSizeType inSize, TCSizeType inCl
 	TVoidPtr mem(nullptr);
 	if (inClassIndex == 255)
 	{
-		ZOOFARI_ERROR("TODO: Not implemented");
+		// Calculate number of pages
+		size_t const uNumPages(inSize / CMemConst::PAGE);
+
+		// Cast the block to a large block (which has some extra data attached such as number of pages, etc.
+		CMemBlockHuge* pHugeBlock(static_cast<CMemBlockHuge*>(m_Blocks[inClassIndex]));
+		CMemBlockHuge* pPreviousBlock(nullptr);
+		while ((pHugeBlock != nullptr) && (pHugeBlock->m_PageCount < uNumPages))
+		{
+			pPreviousBlock = pHugeBlock;
+			pHugeBlock = static_cast<CMemBlockHuge*>(pHugeBlock->m_Next);
+		}
+
+		// If a valid huge block is found, pull it from the list
+		if (pHugeBlock != nullptr)
+		{
+			mem = pHugeBlock;
+
+			// If the previous block does not exist, the selected block was the list start, so just destroy the list
+			if (pPreviousBlock == nullptr)
+			{
+				m_Blocks[inClassIndex] = nullptr;
+			}
+			else
+			{
+				// In this case, the selected block is somewhere in the middle of the list, so just remove it
+				pPreviousBlock->m_Next = pHugeBlock->m_Next;
+			}
+		}
 	}
 	else
 	{

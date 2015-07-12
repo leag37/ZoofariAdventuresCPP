@@ -14,7 +14,7 @@ ZOOFARI_BEGIN_NAMESPACE(memory)
 class CSpanTree
 {
 public:
-	CSpanTree() : m_Head(nullptr), m_FreeHead(nullptr), m_AllocatedBytes(0) {}
+	CSpanTree();
 	CMemNode* Allocate(size_t inPageCount);
 
 	CMemNode* Find(void* inAddress);
@@ -37,6 +37,9 @@ private:
 
 	// The amount allocated
 	size_t m_AllocatedBytes;
+
+	// The number of bytes to allocate when more nodes are needed in the span tree
+	size_t m_NodeBytesToAlloc;
 };
 
 ZOOFARI_END_NAMESPACE()

@@ -89,7 +89,7 @@ void* CGlobalAllocator::Allocate(size_t const inSize)
 	if (addr == nullptr)
 	{
 		// Get a memory block from the central heap. The central heap donates a best fit node from the available nodes.
-		addr = m_CentralHeap.GetBlock(classIndex);// m_CentralHeap.GetNode(sizeClass);
+		addr = m_CentralHeap.GetBlock(sizeClass, classIndex);// m_CentralHeap.GetNode(sizeClass);
 
 		// If no nodes are available, the allocate a new run of pages and give it to the local heap to chunk up and process.
 		// A single span will always be owned by a single local heap.
@@ -99,7 +99,7 @@ void* CGlobalAllocator::Allocate(size_t const inSize)
 			// Allocate the span and register it with the span tree
 			CMemNode* node = m_SpanTree.Allocate(sizeClass);
 			m_CentralHeap.InsertNode(node, sizeClass, classIndex);
-			addr = m_CentralHeap.GetBlock(classIndex);
+			addr = m_CentralHeap.GetBlock(sizeClass, classIndex);
 		}
 	}
 
@@ -127,6 +127,12 @@ void CGlobalAllocator::Free(void* inMem)
 	else
 	{
 		classIndex = CalcClassIndexSmall(pSource->m_SizeClass);
+	}
+
+	if (pSource->m_PageCount >= 255)
+	{
+		int a = 0;
+		a = a;
 	}
 
 	// Return the memory to the local heap. If the local heap is filled, flush the cache to the global heap.

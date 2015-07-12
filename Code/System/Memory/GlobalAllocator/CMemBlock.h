@@ -16,6 +16,12 @@ public:
 	CMemBlock* m_Next;
 };
 
+class CMemBlockHuge : public CMemBlock
+{
+public:
+	// Page count
+	size_t m_PageCount;
+};
 ZOOFARI_END_NAMESPACE()
 ZOOFARI_END_NAMESPACE()
 ZOOFARI_END_NAMESPACE()
