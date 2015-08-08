@@ -41,7 +41,7 @@ endfunction()
 
 create_source_group(Common ZOOFARI_COMMON_SRCS ZOOFARI_COMMON_CPPS)
 create_source_group(Game ZOOFARI_GAME_SRCS ZOOFARI_GAME_CPPS)
-#create_source_group(Editor ZOOFARI_EDITOR_SRCS ZOOFARI_EDITOR_CPPS)
+create_source_group(Editor ZOOFARI_EDITOR_SRCS ZOOFARI_EDITOR_CPPS)
 create_source_group(System ZOOFARI_SYSTEM_SRCS ZOOFARI_SYSTEM_CPPS)
 
 # Add platform-specific information
@@ -62,17 +62,10 @@ if(DEFINED PLATFORM)
 		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /fp:fast ")
 		set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /fp:fast ")
 
-		set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../Game")
-
-	elseif(${PLATFORM} STREQUAL "OSX")
+	elseif(${PLATFORM} STREQUAL "Darwin")
 		# Mac Platform-Dependent Files
-		file(GLOB_RECURSE ZOOFARI_PLATFORM_SRCS 
-			${CMAKE_CURRENT_SOURCE_DIR}/Code/OSX/*.h 
-			${CMAKE_CURRENT_SOURCE_DIR}/Code/OSX/*.inl 
-			${CMAKE_CURRENT_SOURCE_DIR}/Code/OSX/*.cpp
-			${CMAKE_CURRENT_SOURCE_DIR}/Code/OSX/*.m)
-
-		#include_directories(Code/OSX/Include)
+		create_source_group(Platform/Darwin/Editor ZOOFARI_PLATFORM_EDITOR_SRCS ZOOFARI_PLATFORM_EDITOR_CPPS)
+		create_source_group(Platform/Darwin/Game ZOOFARI_PLATFORM_GAME_SRCS ZOOFARI_PLATFORM_GAME_CPPS)
 
 		# Strip all symbols from the final build
 		# Support Link Time Optimization for all release build types without debug information
@@ -93,16 +86,15 @@ if(DEFINED PLATFORM)
 
 	endif()
 
-	if(${PLATFORM} STREQUAL "Win32")
-		add_definitions(-DZOOFARI_WIN32 -DZOOFARI_WINDOWS)
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../Game")
 
-	elseif(${PLATFORM} STREQUAL "Win64")
+	if(${PLATFORM} STREQUAL "Win64")
 		add_definitions(-DZOOFARI_WIN64 -DZOOFARI_WINDOWS)
 
 		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MACHINE:X64")
 
-	elseif(${PLATFORM} STREQUAL "OSX")
-		add_definitions(-DZOOFARI_OSX -DZOOFARI_DARWIN)
+	elseif(${PLATFORM} STREQUAL "Darwin")
+		add_definitions(-DZOOFARI_DARWIN)
 
 	endif()
 endif()
@@ -125,11 +117,3 @@ set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} -DZOOFARI_MINSIZER
 
 add_executable(ZOOFARI_GAME ${ZOOFARI_GAME_SRCS} ${ZOOFARI_PLATFORM_SRCS} ${ZOOFARI_SYSTEM_SRCS} ${ZOOFARI_COMMON_SRCS})
 add_executable(ZOOFARI_EDITOR ${ZOOFARI_EDITOR_SRCS} ${ZOOFARI_PLATFORM_SRCS} ${ZOOFARI_SYSTEM_SRCS} ${ZOOFARI_COMMON_SRCS})
-
-# Define iOS project properties
-#if(DEFINED PLATFORM)
-#	if(${PLATFORM} STREQUAL "Win32" OR ${PLATFORM} STREQUAL "Win64")
-#		set_target_properties(ZOOFARI_GAME PROPERTIES USERFILE_WORKING_DIRECTORY_DEBUG "")
-#		separate_arguments(ZOOFARI_ARGS WINDOWS_COMMAND "${CMAKE_CURRENT_SOURCE_DIR}")
-#	endif()
-#endif() 

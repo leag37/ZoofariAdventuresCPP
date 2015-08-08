@@ -32,3 +32,6 @@ Build
 Docs/html
 Docs/latex
 Game
+
+# OS Files
+*.DS_Store
