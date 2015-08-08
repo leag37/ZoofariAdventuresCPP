@@ -18,6 +18,7 @@ CRoot::~CRoot()
 void CRoot::Initialize()
 {
 	// Initialize Memory
+	zoofari::system::memory::CGlobalAllocator::Get().Initialize();
 
 	// Initialize base systems (threading, rendering, physics, etc.)
 	
@@ -35,6 +36,8 @@ void CRoot::Initialize()
 //*************************************************************************************************
 void CRoot::Shutdown()
 {
+	// Shutdown Memory
+	zoofari::system::memory::CGlobalAllocator::Get().Shutdown();
 
 }
 
