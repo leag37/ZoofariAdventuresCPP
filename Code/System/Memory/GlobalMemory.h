@@ -4,9 +4,10 @@
 
 #include "Core\Platform.h"
 
-#include ZOOFARI_INCLUDE_STL(cstdlib)
+#include "GlobalAllocator\CGlobalAllocator.h"
+//#include ZOOFARI_INCLUDE_STL(cstdlib)
 
-ZOOFARI_BEGIN_NAMESPACE(zoofari)
+//ZOOFARI_BEGIN_NAMESPACE(zoofari)
 
 /** \addtogroup memory
  *	@{
@@ -14,34 +15,28 @@ ZOOFARI_BEGIN_NAMESPACE(zoofari)
 
 inline void * operator new(size_t inSize)
 {
-	return malloc(inSize);
-}
-
-inline void * operator new(size_t /*inSize*/, void * inPtr)
-{
-	return inPtr;
+	using namespace zoofari::system::memory;
+	return CGlobalAllocator::Get().Allocate(inSize);//malloc(inSize);
 }
 
 inline void * operator new[](size_t inSize)
 {
-	return malloc(inSize);
-}
-
-inline void * operator new[](size_t /*inSize*/, void * inPtr)
-{
-	return inPtr;
+	using namespace zoofari::system::memory;
+	return CGlobalAllocator::Get().Allocate(inSize);//malloc(inSize);
 }
 
 inline void operator delete(void * inPtr)
 {
-	free(inPtr);
+	using namespace zoofari::system::memory;
+	CGlobalAllocator::Get().Free(inPtr);// free(inPtr);
 }
 
 inline void operator delete[](void * inPtr)
 {
-	free(inPtr);
+	using namespace zoofari::system::memory;
+	CGlobalAllocator::Get().Free(inPtr);// free(inPtr);
 }
 
 /** @} */
 
-ZOOFARI_END_NAMESPACE()
+//ZOOFARI_END_NAMESPACE()

@@ -40,3 +40,6 @@
 	_class(_class const &) = delete;				\
 	_class & operator=(_class const &) = delete;
 
+#define ZOOFARI_MOVE_PROTECT(_class)			\
+	_class(_class &&) = delete;					\
+	_class & operator=(_class &&) = delete;
