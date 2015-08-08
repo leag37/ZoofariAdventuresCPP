@@ -2,6 +2,8 @@
 // Copyright 2015 Gael Huber
 #include "CGlobalMemHeap.h"
 
+
+
 #include ZOOFARI_INCLUDE_HEADER(Memory\CMemConst)
 #include ZOOFARI_INCLUDE_STL(new)
 
@@ -11,11 +13,11 @@ ZOOFARI_BEGIN_NAMESPACE(memory)
 
 CGlobalMemHeap::TVoid CGlobalMemHeap::InsertNode(CMemNode* inNode, TCSizeType inSizeClass, TCSizeType inClassIndex)
 {
-	ZOOFARI_ASSERT(m_Blocks[inClassIndex] == nullptr);
-
 	// If the size of the class is less than or equal to a page, mark the size class
 	if (inNode->m_PageCount == 1)
 	{
+		ZOOFARI_ASSERT(m_Blocks[inClassIndex] == nullptr);
+
 		// Determine the number of chunks to break the node into
 		TCSizeType blockCount(inNode->m_PageCount * CMemConst::PAGE / inSizeClass);
 
@@ -39,6 +41,7 @@ CGlobalMemHeap::TVoid CGlobalMemHeap::InsertNode(CMemNode* inNode, TCSizeType in
 	}
 	else if (inNode->m_PageCount < 255)
 	{
+		ZOOFARI_ASSERT(m_Blocks[inClassIndex] == nullptr);
 		CMemBlock* block(new(inNode->m_Span) CMemBlock());
 		block->m_Next = m_Blocks[inClassIndex];
 		m_Blocks[inClassIndex] = block;
@@ -46,6 +49,7 @@ CGlobalMemHeap::TVoid CGlobalMemHeap::InsertNode(CMemNode* inNode, TCSizeType in
 	}
 	else
 	{
+		// Insert a huge block, there may already be large blocks here
 		CMemBlockHuge* block(new(inNode->m_Span) CMemBlockHuge());
 		block->m_Next = m_Blocks[inClassIndex];
 		block->m_PageCount = inNode->m_PageCount;

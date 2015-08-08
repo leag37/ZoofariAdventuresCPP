@@ -49,7 +49,7 @@ void CGameRoot::Initialize()
 
 	std::vector<s32> vInt;
 
-	for (s32 i(0); i < 4000000000; ++i)
+	for (s32 i(0); i < 40000000; ++i)
 	{
 		vInt.emplace_back(i);
 	}

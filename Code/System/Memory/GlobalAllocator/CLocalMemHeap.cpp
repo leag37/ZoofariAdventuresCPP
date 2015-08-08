@@ -81,6 +81,9 @@ CLocalMemHeap::TVoidPtr CLocalMemHeap::GetMem(TCSizeType inSize, TCSizeType inCl
 CMemBlock* CLocalMemHeap::FreeMem(TVoidPtr inAddr, TCSizeType inClassIndex, TCSizeType inSizeClass)
 {
 	CMemBlock* bReleasedBlocks(nullptr);
+	
+	// Increase the size of the list. If the size now exeeds the maximum length, donate to the central list
+	++m_Length[inClassIndex];
 
 	// Lookup the block at the appropriate index
 	if (inClassIndex != 255)
@@ -92,9 +95,6 @@ CMemBlock* CLocalMemHeap::FreeMem(TVoidPtr inAddr, TCSizeType inClassIndex, TCSi
 		// Update the head by pushing the new block onto the start of the queue.
 		block->m_Next = (*head);
 		*head = block;
-		
-		// Increase the size of the list. If the size now exeeds the maximum length, donate to the central list
-		++m_Length[inClassIndex];
 
 		if (m_Length[inClassIndex] > m_MaxLength[inClassIndex])
 		{
@@ -113,12 +113,47 @@ CMemBlock* CLocalMemHeap::FreeMem(TVoidPtr inAddr, TCSizeType inClassIndex, TCSi
 		{
 			// Decrease size of total cache by calculating class size and decrementing
 			m_CacheSize += inSizeClass;
-
 		}
 	}
 	else
 	{
-		ZOOFARI_ERROR("TODO: Not implemented");
+		CMemBlockHuge* block = new(inAddr)CMemBlockHuge();
+
+		CMemBlock** head = &m_Blocks[inClassIndex];
+
+		// Update the head by pushing the new block onto the start of the queue.
+		block->m_Next = (*head);
+		block->m_PageCount = inSizeClass / CMemConst::PAGE;
+		*head = block;
+
+		if (m_Length[inClassIndex] > m_MaxLength[inClassIndex])
+		{
+			// Decrease size of total cache by calculating class size and decrementing
+			size_t flushSize(0);
+			{
+				CMemBlockHuge* pFlushBlock(static_cast<CMemBlockHuge*>(*head));
+				while (pFlushBlock != nullptr)
+				{
+					flushSize += pFlushBlock->m_PageCount * CMemConst::PAGE;
+					pFlushBlock = static_cast<CMemBlockHuge*>(pFlushBlock->m_Next);
+				}
+				flushSize -= inSizeClass;
+				m_CacheSize -= flushSize;
+			}
+
+			// Increase max length accordingly if it exceeds capacity. This helps a slow-start buildup of this block of memory
+			m_MaxLength[inClassIndex] = m_Length[inClassIndex];
+
+			// Flush the cache
+			m_Length[inClassIndex] = 0;
+			bReleasedBlocks = m_Blocks[inClassIndex];
+			m_Blocks[inClassIndex] = nullptr;
+		}
+		else
+		{
+			// Decrease size of total cache by calculating class size and decrementing
+			m_CacheSize += inSizeClass;
+		}
 	}
 
 	// Return true if the cache is full for the requested size class

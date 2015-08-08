@@ -122,17 +122,11 @@ void CGlobalAllocator::Free(void* inMem)
 	size_t classIndex(0);
 	if (pSource->m_PageCount > 1)
 	{
-		classIndex = pSource->m_PageCount + 8;
+		classIndex = std::min(pSource->m_PageCount + 8, static_cast<size_t>(255));
 	}
 	else
 	{
 		classIndex = CalcClassIndexSmall(pSource->m_SizeClass);
-	}
-
-	if (pSource->m_PageCount >= 255)
-	{
-		int a = 0;
-		a = a;
 	}
 
 	// Return the memory to the local heap. If the local heap is filled, flush the cache to the global heap.

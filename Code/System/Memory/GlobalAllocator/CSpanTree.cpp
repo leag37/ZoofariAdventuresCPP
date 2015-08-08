@@ -136,7 +136,7 @@ void CSpanTree::Insert(CMemNode * inNode)
 				// If the left child does not exist, proceed. Otherwise, set it.
 				if (curr->m_Left != nullptr)
 				{
-					curr = inNode->m_Left;
+					curr = curr->m_Left;
 				}
 				else
 				{
@@ -151,7 +151,7 @@ void CSpanTree::Insert(CMemNode * inNode)
 				// If the right child does not exist, proceed. Otherwise, set it.
 				if (curr->m_Right != nullptr)
 				{
-					curr = inNode->m_Right;
+					curr = curr->m_Right;
 				}
 				else
 				{
@@ -171,15 +171,18 @@ void CSpanTree::Release()
 	{
 		// Find the left-most child
 		CMemNode* pNode(m_Head);
+		CMemNode* pParentNode(nullptr);
 		bool bHasChild(true);
 		do
 		{
 			if (pNode->m_Left != nullptr)
 			{
+				pParentNode = pNode;
 				pNode = pNode->m_Left;
 			}
 			else if (pNode->m_Right != nullptr)
 			{
+				pParentNode = pNode;
 				pNode = pNode->m_Right;
 			}
 			else
@@ -214,18 +217,66 @@ void CSpanTree::Release()
 			m_Head->m_SizeClass = 0;
 
 			// Replace the current head with the leaf node
-			pNode->m_Left = m_Head->m_Left == pNode ? nullptr : m_Head->m_Left;
-			pNode->m_Right = m_Head->m_Right == pNode ? nullptr : m_Head->m_Right;
+			if (m_Head->m_Left == pNode)
+			{
+				pNode->m_Left = nullptr;
+			}
+			else
+			{
+				pNode->m_Left = m_Head->m_Left;
+			}
+
+			if (m_Head->m_Right == pNode)
+			{
+				pNode->m_Right = nullptr;
+			}
+			else
+			{
+				pNode->m_Right = m_Head->m_Right;
+			}
+
+			if (pParentNode != nullptr)
+			{
+				if (pParentNode->m_Left == pNode)
+				{
+					pParentNode->m_Left = nullptr;
+				}
+				else if (pParentNode->m_Right == pNode)
+				{
+					pParentNode->m_Right = nullptr;
+				}
+			}
 
 			m_Head->m_Left = m_FreeHead;
+			m_Head->m_Right = nullptr;
 			m_FreeHead = m_Head;
 
 			m_Head = pNode;
 		}
 	}
 
+	// Precalculate the number of nodes that is allocated when new nodes are allocated
+	size_t const cMemNodeSize(sizeof(CMemNode));
+	size_t const cNodesPerPage(m_NodeBytesToAlloc / cMemNodeSize);
+
+	// Verify the number of nodes from start to finish is valid presort
+	{
+		u32 uNumNodes(0U);
+		CMemNode* pNode(m_FreeHead);
+		while (pNode != nullptr)
+		{
+			// If the next node is valid, make sure the address pointed to is the next possible address in physical memory
+			pNode = pNode->m_Left;
+			++uNumNodes;
+		}
+
+		// Make sure the number of counted nodes in the free list is a multiple of the allocation count of nodes
+		ZOOFARI_ASSERT((uNumNodes % cNodesPerPage) == 0);
+	}
+
 	// Second, sort free-list by address
 	{
+		u32 uNumNodes(0U);
 		CMemNode** pCurrNode(&m_FreeHead);
 		// Iterate through list
 		while (*pCurrNode != nullptr)
@@ -277,12 +328,33 @@ void CSpanTree::Release()
 			}
 
 			pCurrNode = &(*pCurrNode)->m_Left;
+			++uNumNodes;
 		}
+
+		// Make sure the number of nodes we have sorted in the free list is a multiple of the allocation count of nodes
+		ZOOFARI_ASSERT((uNumNodes % cNodesPerPage) == 0);
+	}
+
+	// Verify the number of nodes from start to finish is valid
+	{
+		u32 uNumNodes(0U);
+		CMemNode* pNode(m_FreeHead);
+		while (pNode != nullptr)
+		{
+			// If the next node is valid, make sure the address pointed to is the next possible address in physical memory
+			if (pNode->m_Left != nullptr)
+			{
+				ZOOFARI_ASSERT((pNode + 1) == (pNode->m_Left));
+			}
+			pNode = pNode->m_Left;
+			++uNumNodes;
+		}
+
+		// Make sure the number of counted nodes in the free list is a multiple of the allocation count of nodes
+		ZOOFARI_ASSERT((uNumNodes % cNodesPerPage) == 0);
 	}
 
 	// Third, free all items on free list
-	size_t const cMemNodeSize(sizeof(CMemNode));
-	size_t const cNodesPerPage(m_NodeBytesToAlloc / cMemNodeSize);
 	while (m_FreeHead != nullptr)
 	{
 		// Store off head
