@@ -2,11 +2,11 @@
 // Copyright 2015 Gael Huber
 #pragma once
 
-#include "Core\ZoofariCore.h"
+#include "Core/ZoofariCore.h"
 
-#include ZOOFARI_INCLUDE_HEADER(CLocalMemHeap)
-#include ZOOFARI_INCLUDE_HEADER(CGlobalMemHeap)
-#include ZOOFARI_INCLUDE_HEADER(CSpanTree)
+#include ZOOFARI_INCLUDE(CLocalMemHeap.h)
+#include ZOOFARI_INCLUDE(CGlobalMemHeap.h)
+#include ZOOFARI_INCLUDE(CSpanTree.h)
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
 ZOOFARI_BEGIN_NAMESPACE(system)
@@ -63,8 +63,11 @@ private:
 	static CGlobalAllocator sGlobalAllocator;
 
 	// Thread-local heap
-	static thread_local CLocalMemHeap m_LocalHeap;
+	static THREADLOCAL CLocalMemHeap * m_LocalHeap;
 
+    // Local heaps
+    CLocalMemHeap m_LocalHeaps;
+    
 	// Central heap
 	CGlobalMemHeap m_CentralHeap;
 

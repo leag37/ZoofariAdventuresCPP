@@ -2,6 +2,8 @@
 // Copyright 2015 Gael Huber
 #include "CRoot.h"
 
+#include ZOOFARI_INCLUDE(Memory/GlobalAllocator/CGlobalAllocator.h)
+
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
 ZOOFARI_BEGIN_NAMESPACE(system)
 ZOOFARI_BEGIN_NAMESPACE(core)
@@ -18,7 +20,7 @@ CRoot::~CRoot()
 void CRoot::Initialize()
 {
 	// Initialize Memory
-	zoofari::system::memory::CGlobalAllocator::Get().Initialize();
+	memory::CGlobalAllocator::Get().Initialize();
 
 	// Initialize base systems (threading, rendering, physics, etc.)
 	
@@ -37,7 +39,7 @@ void CRoot::Initialize()
 void CRoot::Shutdown()
 {
 	// Shutdown Memory
-	zoofari::system::memory::CGlobalAllocator::Get().Shutdown();
+	memory::CGlobalAllocator::Get().Shutdown();
 
 }
 

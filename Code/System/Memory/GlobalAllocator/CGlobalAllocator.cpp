@@ -2,9 +2,9 @@
 // Copyright 2015 Gael Huber
 #include "CGlobalAllocator.h"
 
-#include ZOOFARI_INCLUDE_HEADER(CMemNode)
+#include ZOOFARI_INCLUDE(CMemNode.h)
 
-#include ZOOFARI_INCLUDE_HEADER(Stl\StlUtility)
+#include ZOOFARI_INCLUDE(Stl/StlUtility.h)
 #include ZOOFARI_INCLUDE_STL(algorithm)
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
@@ -14,7 +14,7 @@ ZOOFARI_BEGIN_NAMESPACE(memory)
 CGlobalAllocator CGlobalAllocator::sGlobalAllocator = zoofari::move(CGlobalAllocator());
 
 // Thread-local heap
-thread_local CLocalMemHeap CGlobalAllocator::m_LocalHeap;
+THREADLOCAL CLocalMemHeap* CGlobalAllocator::m_LocalHeap = nullptr;
 
 CGlobalAllocator & CGlobalAllocator::Get()
 {
@@ -23,13 +23,17 @@ CGlobalAllocator & CGlobalAllocator::Get()
 
 bool CGlobalAllocator::Initialize()
 {
+#if defined(ZOOFARI_USE_CUSTOM_ALLOCATOR)
 	m_InUse = 0;
-
+    
+    m_LocalHeap = &m_LocalHeaps;
+#endif
 	return true;
 }
 
 void CGlobalAllocator::Shutdown()
 {
+#if defined(ZOOFARI_USE_CUSTOM_ALLOCATOR)
 	// Shutdown the global allocator by freeing all memory in global heap. By this point, all memory should be returned
 	// to global heap.
 	m_CentralHeap.Clean();
@@ -37,6 +41,7 @@ void CGlobalAllocator::Shutdown()
 
 	// There should be no dynamic memory in use at this stage
 	ZOOFARI_ASSERT(m_InUse == 0);
+#endif
 }
 
 void* CGlobalAllocator::Allocate(size_t const inSize)
@@ -83,13 +88,14 @@ void* CGlobalAllocator::Allocate(size_t const inSize)
 	}
 
 	// First, get memory from the local heap
-	addr = m_LocalHeap.GetMem(sizeClass, classIndex);
+    size_t allocatedSizeClass;
+	addr = m_LocalHeap->GetMem(sizeClass, classIndex, allocatedSizeClass);
 	
 	// If the local heap does not return a valid address, perform a lookup on the global heap
 	if (addr == nullptr)
 	{
 		// Get a memory block from the central heap. The central heap donates a best fit node from the available nodes.
-		addr = m_CentralHeap.GetBlock(sizeClass, classIndex);// m_CentralHeap.GetNode(sizeClass);
+		addr = m_CentralHeap.GetBlock(sizeClass, classIndex, allocatedSizeClass);// m_CentralHeap.GetNode(sizeClass);
 
 		// If no nodes are available, the allocate a new run of pages and give it to the local heap to chunk up and process.
 		// A single span will always be owned by a single local heap.
@@ -99,11 +105,11 @@ void* CGlobalAllocator::Allocate(size_t const inSize)
 			// Allocate the span and register it with the span tree
 			CMemNode* node = m_SpanTree.Allocate(sizeClass);
 			m_CentralHeap.InsertNode(node, sizeClass, classIndex);
-			addr = m_CentralHeap.GetBlock(sizeClass, classIndex);
+			addr = m_CentralHeap.GetBlock(sizeClass, classIndex, allocatedSizeClass);
 		}
 	}
 
-	m_InUse += sizeClass;
+	m_InUse += allocatedSizeClass;
 
 	ZOOFARI_ASSERT(addr != nullptr);
 	return addr;
@@ -130,13 +136,14 @@ void CGlobalAllocator::Free(void* inMem)
 	}
 
 	// Return the memory to the local heap. If the local heap is filled, flush the cache to the global heap.
-	CMemBlock* pReleasedBlocks = m_LocalHeap.FreeMem(inMem, classIndex, pSource->m_SizeClass);
+	CMemBlock* pReleasedBlocks = m_LocalHeap->FreeMem(inMem, classIndex, pSource->m_SizeClass);
 	if (pReleasedBlocks != nullptr)
 	{
 		// Give the blocks back to the global heap
 		m_CentralHeap.InsertBlocks(pReleasedBlocks, classIndex);
 	}
 
+    ZOOFARI_ASSERT(pSource->m_SizeClass <= m_InUse);
 	m_InUse -= pSource->m_SizeClass;
 }
 

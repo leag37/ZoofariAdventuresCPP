@@ -2,9 +2,13 @@
 // Copyright 2015 Gael Huber
 #pragma once
 
-#include "Platform.h"
+#include "Core/ZoofariCore.h"
+
+#include <cstddef>
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
+
+using std::nullptr_t;
 
 typedef unsigned char u8;
 typedef char s8;

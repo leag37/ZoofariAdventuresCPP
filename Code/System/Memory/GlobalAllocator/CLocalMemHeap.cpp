@@ -2,8 +2,8 @@
 // Copyright 2015 Gael Huber
 #include "CLocalMemHeap.h"
 
-#include ZOOFARI_INCLUDE_HEADER(CMemNode)
-#include ZOOFARI_INCLUDE_HEADER(Memory\CMemConst)
+#include ZOOFARI_INCLUDE(CMemNode.h)
+#include ZOOFARI_INCLUDE(Memory/CMemConst.h)
 
 #include ZOOFARI_INCLUDE_STL(new)
 #include ZOOFARI_INCLUDE_STL(algorithm)
@@ -25,7 +25,7 @@ CLocalMemHeap::CLocalMemHeap()
 CLocalMemHeap::~CLocalMemHeap() 
 {}
 
-CLocalMemHeap::TVoidPtr CLocalMemHeap::GetMem(TCSizeType inSize, TCSizeType inClassIndex)
+CLocalMemHeap::TVoidPtr CLocalMemHeap::GetMem(TCSizeType inSize, TCSizeType inClassIndex, TSizeType & outAllocatedSizeClass)
 {
 	// If the index is 255, get large mem
 	TVoidPtr mem(nullptr);
@@ -47,6 +47,7 @@ CLocalMemHeap::TVoidPtr CLocalMemHeap::GetMem(TCSizeType inSize, TCSizeType inCl
 		if (pHugeBlock != nullptr)
 		{
 			mem = pHugeBlock;
+            outAllocatedSizeClass = pHugeBlock->m_PageCount * CMemConst::PAGE;
 
 			// If the previous block does not exist, the selected block was the list start, so just destroy the list
 			if (pPreviousBlock == nullptr)
@@ -67,6 +68,7 @@ CLocalMemHeap::TVoidPtr CLocalMemHeap::GetMem(TCSizeType inSize, TCSizeType inCl
 		{
 			// Get the memory if there is a free block
 			mem = block;
+            outAllocatedSizeClass = inSize;
 			m_Blocks[inClassIndex] = block->m_Next;
 			
 			// Decrement the length

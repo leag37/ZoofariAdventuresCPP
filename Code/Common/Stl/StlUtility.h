@@ -2,7 +2,7 @@
 // Copyright 2015 Gael Huber
 #pragma once
 
-#include "Core\Platform.h"
+#include "Core/Platform.h"
 
 #include ZOOFARI_INCLUDE_STL(utility)
 

@@ -2,8 +2,9 @@
 // Copyright 2015 Gael Huber
 #pragma once
 
-#include "Core\ZoofariCore.h"
-#include ZOOFARI_INCLUDE_HEADER(Core\CSystemRegistry)
+#include "Core/ZoofariCore.h"
+
+//#include ZOOFARI_INCLUDE(Core/CSystemRegistry.h)
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
 ZOOFARI_BEGIN_NAMESPACE(system)

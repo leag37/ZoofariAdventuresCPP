@@ -4,7 +4,7 @@
 
 
 
-#include ZOOFARI_INCLUDE_HEADER(Memory\CMemConst)
+#include ZOOFARI_INCLUDE(Memory/CMemConst.h)
 #include ZOOFARI_INCLUDE_STL(new)
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
@@ -31,7 +31,6 @@ CGlobalMemHeap::TVoid CGlobalMemHeap::InsertNode(CMemNode* inNode, TCSizeType in
 		{
 			block = new(place) CMemBlock();
 			block->m_Next = block + increment;
-			CMemBlock* blah = block + 1;
 			place = block->m_Next;
 		}
 		block->m_Next = nullptr;
@@ -77,7 +76,7 @@ CGlobalMemHeap::TVoid CGlobalMemHeap::InsertBlocks(CMemBlock* inBlock, TCSizeTyp
 	} while (false); // TODO
 }
 
-CGlobalMemHeap::TVoidPtr CGlobalMemHeap::GetBlock(TCSizeType inSize, TCSizeType inClassIndex)
+CGlobalMemHeap::TVoidPtr CGlobalMemHeap::GetBlock(TCSizeType inSize, TCSizeType inClassIndex, TSizeType & outAllocatedSizeClass)
 { 
 	// If the index is 255, get large mem
 	TVoidPtr mem(nullptr);
@@ -99,6 +98,7 @@ CGlobalMemHeap::TVoidPtr CGlobalMemHeap::GetBlock(TCSizeType inSize, TCSizeType 
 		if (pHugeBlock != nullptr)
 		{
 			mem = pHugeBlock;
+            outAllocatedSizeClass = pHugeBlock->m_PageCount * CMemConst::PAGE;
 
 			// If the previous block does not exist, the selected block was the list start, so just destroy the list
 			if (pPreviousBlock == nullptr)
@@ -119,6 +119,7 @@ CGlobalMemHeap::TVoidPtr CGlobalMemHeap::GetBlock(TCSizeType inSize, TCSizeType 
 		{
 			// Get the memory if there is a free block
 			mem = block;
+            outAllocatedSizeClass = inSize;
 			m_Blocks[inClassIndex] = block->m_Next;
 		}
 	}

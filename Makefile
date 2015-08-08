@@ -15,6 +15,8 @@ else
 	POST_PROCESS := ./Toolchain/Win64PostProcess.sh
 endif
 
+USE_CUSTOM_ALLOCATOR ?= true
+
 # Colors
 RED="\033[0;31m"
 GREEN="\033[0;32m"
@@ -32,7 +34,7 @@ endif
 help:
 	$(ECHO)
 	$(ECHO) ${GREEN}Commands:${NC}
-	$(ECHO) ${RED}build ${ORANGE}[\<PLATFORM\>]${NC} - Builds the project for the target platform
+	$(ECHO) ${RED}build ${ORANGE}[\<PLATFORM\>=\<platform\>] [\<USE_CUSTOM_ALLOCATOR\>=true|false]${NC} - Builds the project for the target platform
 	$(ECHO) ${RED}clean${NC} - Cleans the target platform
 
 .PHONY: build
@@ -40,7 +42,7 @@ build:
 	$(ECHO) ${GREEN}Building for $(OS) using $(GENERATOR)${NC}
 	@mkdir -p Build/$(OS)
 	@cd Build/$(OS); 									\
-	cmake ../../Code -G"$(GENERATOR)" -DPLATFORM=$(OS) $(ARGS)
+	cmake ../../Code -G"$(GENERATOR)" -DPLATFORM=$(OS) -DUSE_CUSTOM_ALLOCATOR=$(USE_CUSTOM_ALLOCATOR) $(ARGS)
 	@$(POST_PROCESS)
 	$(ECHO) ${GREEN}Done${NC}
 

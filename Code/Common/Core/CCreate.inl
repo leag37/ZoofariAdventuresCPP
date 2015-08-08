@@ -1,8 +1,6 @@
 // Filename: CCreate.inl
 // Copyright 2015 Gael Huber
-#include "Platform.h"
-#include ZOOFARI_INCLUDE_HEADER(Assert)
-#include ZOOFARI_INCLUDE_HEADER(memory\GlobalMemory)
+#include ZOOFARI_INCLUDE(Assert.h)
 #include ZOOFARI_INCLUDE_STL(utility)
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)

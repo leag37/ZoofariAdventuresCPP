@@ -2,10 +2,10 @@
 // Copyright 2015 Gael Huber
 #pragma once
 
-#include "Core\ZoofariCore.h"
+#include "Core/ZoofariCore.h"
 
-#include ZOOFARI_INCLUDE_HEADER(CMemBlock)
-#include ZOOFARI_INCLUDE_HEADER(CMemNode)
+#include ZOOFARI_INCLUDE(CMemBlock.h)
+#include ZOOFARI_INCLUDE(CMemNode.h)
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
 ZOOFARI_BEGIN_NAMESPACE(system)
@@ -29,7 +29,7 @@ public:
 
 	TVoid InsertNode(CMemNode* inNode, TCSizeType inSizeClass, TCSizeType inClassIndex);
 	TVoid InsertBlocks(CMemBlock* inBlock, TCSizeType inClassIndex);
-	TVoidPtr GetBlock(TCSizeType inSize, TCSizeType inClassIndex);
+	TVoidPtr GetBlock(TCSizeType inSize, TCSizeType inClassIndex, TSizeType & outAllocatedSizeClass);
 
 	void Clean();
 

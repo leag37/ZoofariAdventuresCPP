@@ -71,6 +71,8 @@ if(DEFINED PLATFORM)
 		# Support Link Time Optimization for all release build types without debug information
 		set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -s -flto")
 		set(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "${CMAKE_EXE_LINKER_FLAGS_MINSIZEREL} -s -flto")
+
+		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -v")
 		
 		# Support C++11, multi-processor builds for compilation speed and OpenMP for parallel processing
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
@@ -96,6 +98,15 @@ if(DEFINED PLATFORM)
 	elseif(${PLATFORM} STREQUAL "Darwin")
 		add_definitions(-DZOOFARI_DARWIN)
 
+	endif()
+endif()
+
+if(DEFINED USE_CUSTOM_ALLOCATOR)
+	if(${USE_CUSTOM_ALLOCATOR} STREQUAL "true")
+		message("Using custom allocator")
+		add_definitions(-DZOOFARI_USE_CUSTOM_ALLOCATOR)
+	else()
+		message("Using default allocator")
 	endif()
 endif()
 
