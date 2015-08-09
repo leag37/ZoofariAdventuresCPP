@@ -40,7 +40,7 @@ void CGameRoot::Initialize()
 	//
 	//pHello = move(pHello2);
 
-    for(s32 itr(0); itr < 100; ++itr)
+    for(s32 itr(0); itr < 10; ++itr)
     {
         std::vector<s32> vInt;
 

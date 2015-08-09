@@ -51,7 +51,7 @@ create_source_group(Editor ZOOFARI_EDITOR_SRCS ZOOFARI_EDITOR_CPPS)
 create_source_group(System ZOOFARI_SYSTEM_SRCS ZOOFARI_SYSTEM_CPPS)
 
 # Add platform-specific information
-if(${PLATFORM} STREQUAL "Windows_NT")
+if(${PLATFORM} STREQUAL "Windows")
 	# Windows Platform-Dependent Files
 	create_source_group(Platform/Windows/Editor ZOOFARI_PLATFORM_EDITOR_SRCS ZOOFARI_PLATFORM_EDITOR_CPPS)
 	create_source_group(Platform/Windows/Game ZOOFARI_PLATFORM_GAME_SRCS ZOOFARI_PLATFORM_GAME_CPPS)

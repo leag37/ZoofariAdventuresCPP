@@ -5,11 +5,14 @@
 # Visual Studio 12 2013 Win32
 # Visual Studio 12 2013 Win64
 # Xcode
-ifeq "$(OS)" "Darwin"
+UNAME := $(shell uname -s)
+ifeq "$(UNAME)" "Darwin"
 	# OSX
+	PLATFORM = Darwin
 	GENERATOR = Xcode
 else
 	# Windows for now
+	PLATFORM = Windows
 	GENERATOR = Visual Studio 14 2015 Win64
 	POST_PROCESS := ./Toolchain/Win64PostProcess.sh
 endif
@@ -23,7 +26,7 @@ ORANGE="\033[0;33m"
 NC="\033[0m"
 
 # Echo command for Darwin
-ifneq "" "$(findstring Darwin,$(OS))"
+ifneq "" "$(findstring Darwin,$(UNAME))"
 	ECHO:=@echo
 else
 	ECHO:=@echo -e
@@ -38,10 +41,10 @@ help:
 
 .PHONY: build
 build:
-	$(ECHO) ${GREEN}Building for $(OS) using $(GENERATOR)${NC}
-	@mkdir -p Build/$(OS)
-	@cd Build/$(OS); 									\
-	cmake ../../Code -G"$(GENERATOR)" -DPLATFORM=$(OS) -DUSE_CUSTOM_ALLOCATOR=$(USE_CUSTOM_ALLOCATOR) $(ARGS)
+	$(ECHO) ${GREEN}Building for $(PLATFORM) using $(GENERATOR)${NC}
+	@mkdir -p Build/$(PLATFORM)
+	@cd Build/$(PLATFORM); 									\
+	cmake ../../Code -G"$(GENERATOR)" -DPLATFORM=$(PLATFORM) -DUSE_CUSTOM_ALLOCATOR=$(USE_CUSTOM_ALLOCATOR) $(ARGS)
 	$(ECHO) ${GREEN}Done${NC}
 
 .PHONY: clean
