@@ -5,7 +5,6 @@
 # Visual Studio 12 2013 Win32
 # Visual Studio 12 2013 Win64
 # Xcode
-OS := $(shell uname)
 ifeq "$(OS)" "Darwin"
 	# OSX
 	GENERATOR = Xcode
@@ -34,7 +33,7 @@ endif
 help:
 	$(ECHO)
 	$(ECHO) ${GREEN}Commands:${NC}
-	$(ECHO) ${RED}build ${ORANGE}[\<PLATFORM\>=\<platform\>] [\<USE_CUSTOM_ALLOCATOR\>=true|false]${NC} - Builds the project for the target platform
+	$(ECHO) ${RED}build ${ORANGE}[\<PLATFORM\>=\<platform\>] [\<USE_CUSTOM_ALLOCATOR\>=true\|false]${NC} - Builds the project for the target platform
 	$(ECHO) ${RED}clean${NC} - Cleans the target platform
 
 .PHONY: build
@@ -43,15 +42,9 @@ build:
 	@mkdir -p Build/$(OS)
 	@cd Build/$(OS); 									\
 	cmake ../../Code -G"$(GENERATOR)" -DPLATFORM=$(OS) -DUSE_CUSTOM_ALLOCATOR=$(USE_CUSTOM_ALLOCATOR) $(ARGS)
-	@$(POST_PROCESS)
 	$(ECHO) ${GREEN}Done${NC}
 
 .PHONY: clean
 clean:
-	$(ECHO) Removing build files for $(PLATFORM)
-	@rm -rf Build
-
-.PHONY: clean_all
-clean_all:
-	$(ECHO) Removing build files for all platforms
+	$(ECHO) Removing build files
 	@rm -rf Build

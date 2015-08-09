@@ -38,6 +38,12 @@ function(create_source_group DIRECTORY_NAME SRCS_NAME CPPS_NAME)
 	set(${CPPS_NAME} ${CPPS} PARENT_SCOPE)
 endfunction()
 
+# Configure platform
+if(NOT DEFINED PLATFORM)
+	set(PLATFORM ${CMAKE_SYSTEM_NAME}) 
+endif()
+
+message("Configuring for ${PLATFORM}")
 
 create_source_group(Common ZOOFARI_COMMON_SRCS ZOOFARI_COMMON_CPPS)
 create_source_group(Game ZOOFARI_GAME_SRCS ZOOFARI_GAME_CPPS)
@@ -45,60 +51,52 @@ create_source_group(Editor ZOOFARI_EDITOR_SRCS ZOOFARI_EDITOR_CPPS)
 create_source_group(System ZOOFARI_SYSTEM_SRCS ZOOFARI_SYSTEM_CPPS)
 
 # Add platform-specific information
-if(DEFINED PLATFORM)
-	if(${PLATFORM} STREQUAL "Win32" OR ${PLATFORM} STREQUAL "Win64")
-		# Windows Platform-Dependent Files
-		create_source_group(Platform/Windows/Editor ZOOFARI_PLATFORM_EDITOR_SRCS ZOOFARI_PLATFORM_EDITOR_CPPS)
-		create_source_group(Platform/Windows/Game ZOOFARI_PLATFORM_GAME_SRCS ZOOFARI_PLATFORM_GAME_CPPS)
+if(${PLATFORM} STREQUAL "Windows_NT")
+	# Windows Platform-Dependent Files
+	create_source_group(Platform/Windows/Editor ZOOFARI_PLATFORM_EDITOR_SRCS ZOOFARI_PLATFORM_EDITOR_CPPS)
+	create_source_group(Platform/Windows/Game ZOOFARI_PLATFORM_GAME_SRCS ZOOFARI_PLATFORM_GAME_CPPS)
 
-		# Set as a Windows application
-		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS")
+	# Set as a Windows application
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS")
 
-		# Support Link Time Code Generation for all release build types without debug information
-		set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG /INCREMENTAL:NO")
-		set(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "${CMAKE_EXE_LINKER_FLAGS_MINSIZEREL} /LTCG /INCREMENTAL:NO")
-		
-		# Release modes should use fast floating point model and whole program optimization to use with LTCG
-		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /fp:fast ")
-		set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /fp:fast ")
+	# Support Link Time Code Generation for all release build types without debug information
+	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG /INCREMENTAL:NO")
+	set(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "${CMAKE_EXE_LINKER_FLAGS_MINSIZEREL} /LTCG /INCREMENTAL:NO")
+	
+	# Release modes should use fast floating point model and whole program optimization to use with LTCG
+	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /fp:fast ")
+	set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /fp:fast ")
 
-	elseif(${PLATFORM} STREQUAL "Darwin")
-		# Mac Platform-Dependent Files
-		create_source_group(Platform/Darwin/Editor ZOOFARI_PLATFORM_EDITOR_SRCS ZOOFARI_PLATFORM_EDITOR_CPPS)
-		create_source_group(Platform/Darwin/Game ZOOFARI_PLATFORM_GAME_SRCS ZOOFARI_PLATFORM_GAME_CPPS)
+	add_definitions(-DZOOFARI_WIN64 -DZOOFARI_WINDOWS)
 
-		# Strip all symbols from the final build
-		# Support Link Time Optimization for all release build types without debug information
-		set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -s -flto")
-		set(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "${CMAKE_EXE_LINKER_FLAGS_MINSIZEREL} -s -flto")
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MACHINE:X64")
 
-		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -v")
-		
-		# Support C++11, multi-processor builds for compilation speed and OpenMP for parallel processing
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
+elseif(${PLATFORM} STREQUAL "Darwin")
+	# Mac Platform-Dependent Files
+	create_source_group(Platform/Darwin/Editor ZOOFARI_PLATFORM_EDITOR_SRCS ZOOFARI_PLATFORM_EDITOR_CPPS)
+	create_source_group(Platform/Darwin/Game ZOOFARI_PLATFORM_GAME_SRCS ZOOFARI_PLATFORM_GAME_CPPS)
 
-		# Add debug support to debug builds
-		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g ")
-		set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -g ")
+	# Strip all symbols from the final build
+	# Support Link Time Optimization for all release build types without debug information
+	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -s -flto")
+	set(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "${CMAKE_EXE_LINKER_FLAGS_MINSIZEREL} -s -flto")
 
-		# Optimize program as much as possible
-		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -flto")
-		set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} -O3 -flto")
-	else()
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -v")
+	
+	# Support C++11, multi-processor builds for compilation speed and OpenMP for parallel processing
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
 
-	endif()
+	# Add debug support to debug builds
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g ")
+	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -g ")
 
-	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../Game")
+	# Optimize program as much as possible
+	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -flto")
+	set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} -O3 -flto")
 
-	if(${PLATFORM} STREQUAL "Win64")
-		add_definitions(-DZOOFARI_WIN64 -DZOOFARI_WINDOWS)
+	add_definitions(-DZOOFARI_DARWIN)
+else()
 
-		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MACHINE:X64")
-
-	elseif(${PLATFORM} STREQUAL "Darwin")
-		add_definitions(-DZOOFARI_DARWIN)
-
-	endif()
 endif()
 
 if(DEFINED USE_CUSTOM_ALLOCATOR)
@@ -126,5 +124,34 @@ set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -DZOOFARI_
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DZOOFARI_RELEASE")
 set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} -DZOOFARI_MINSIZEREL")
 
+# Configure output information
+set(ZOOFARI_OUTPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../")
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${ZOOFARI_OUTPUT_DIR}/Game")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "${ZOOFARI_OUTPUT_DIR}/Game")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${ZOOFARI_OUTPUT_DIR}/Game")
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL "${ZOOFARI_OUTPUT_DIR}/Game")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL "${ZOOFARI_OUTPUT_DIR}/Game")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${ZOOFARI_OUTPUT_DIR}/Game")
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${ZOOFARI_OUTPUT_DIR}/Game")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "${ZOOFARI_OUTPUT_DIR}/Game")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${ZOOFARI_OUTPUT_DIR}/Game")
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO "${ZOOFARI_OUTPUT_DIR}/Game")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO "${ZOOFARI_OUTPUT_DIR}/Game")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${ZOOFARI_OUTPUT_DIR}/Game")
+
 add_executable(ZOOFARI_GAME ${ZOOFARI_GAME_SRCS} ${ZOOFARI_PLATFORM_SRCS} ${ZOOFARI_SYSTEM_SRCS} ${ZOOFARI_COMMON_SRCS})
 add_executable(ZOOFARI_EDITOR ${ZOOFARI_EDITOR_SRCS} ${ZOOFARI_PLATFORM_SRCS} ${ZOOFARI_SYSTEM_SRCS} ${ZOOFARI_COMMON_SRCS})
+
+#set_property(TARGET PROPERTY DEBUG_POSTFIX _debug)
+
+set_target_properties(ZOOFARI_GAME ZOOFARI_EDITOR
+	PROPERTIES 
+	DEBUG_POSTFIX "_DEBUG"
+	MINSIZEREL_POSTFIX "_MINSIZEREL"
+	RELEASE_POSTFIX "_RELEASE"
+	RELWITHDEBINFO_POSTFIX "_RELWITHDEBINFO"
+	)
