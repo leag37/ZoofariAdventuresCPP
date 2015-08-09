@@ -2,32 +2,25 @@
 // Copyright 2015 Gael Huber
 #include "CGameRoot.h"
 
-//#include ZOOFARI_INCLUDE_HEADER(Stl\StlVector)
-#include ZOOFARI_INCLUDE_HEADER(Stl\StlUtility)
+#include ZOOFARI_INCLUDE(Stl/StlUtility.h)
 
-#include ZOOFARI_INCLUDE_HEADER(Core\CCreate)
-//#include ZOOFARI_INCLUDE_HEADER(Core\CPtr)
-//#include ZOOFARI_INCLUDE_HEADER(Core\CUniquePtr)
+#include ZOOFARI_INCLUDE(Core/CCreate.h)
+#include ZOOFARI_INCLUDE(Memory/CNoAllocatorPolicy.h)
 
-#include ZOOFARI_INCLUDE_HEADER(Memory\CNoAllocatorPolicy)
-
-
-#include <vector>
-//#include <memory>
-//#include <utility>
+#include ZOOFARI_INCLUDE_STL(vector)
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
 ZOOFARI_BEGIN_NAMESPACE(game)
 ZOOFARI_BEGIN_NAMESPACE(core)
 
-class Hello
+/*class Hello
 {
 public:
 	Hello() {}
 	Hello(int inA) : a(inA) {}
 private:
 	int a;
-};
+};*/
 
 //*************************************************************************************************
 CGameRoot::CGameRoot()
@@ -47,12 +40,15 @@ void CGameRoot::Initialize()
 	//
 	//pHello = move(pHello2);
 
-	std::vector<s32> vInt;
+    for(s32 itr(0); itr < 10; ++itr)
+    {
+        std::vector<s32> vInt;
 
-	for (s32 i(0); i < 40000000; ++i)
-	{
-		vInt.emplace_back(i);
-	}
+        for (s32 i(0); i < 40000000; ++i)
+        {
+            vInt.emplace_back(i);
+        }
+    }
 
 	// Setup FSM
 	//CSharedPtr<CSystemFsmStartState> pStartState(CMake<CStartState>());

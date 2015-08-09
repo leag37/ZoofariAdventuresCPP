@@ -1,16 +1,14 @@
-// Filename: CSystemRegistry.cpp
+// Filename: CMemConst.cpp
 // Copyright 2015 Gael Huber
-#include "CSystemRegistry.h"
+#include "CMemConst.h"
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
 ZOOFARI_BEGIN_NAMESPACE(system)
-ZOOFARI_BEGIN_NAMESPACE(core)
+ZOOFARI_BEGIN_NAMESPACE(memory)
 
-CSystemRegistry::CSystemRegistry()
-{}
+size_t const CMemConst::KILOBYTE = 1024;
+size_t const CMemConst::PAGE = 4U * KILOBYTE;
 
-CSystemRegistry::~CSystemRegistry()
-{}
 
 ZOOFARI_END_NAMESPACE()
 ZOOFARI_END_NAMESPACE()

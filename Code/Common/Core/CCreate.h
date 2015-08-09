@@ -2,9 +2,9 @@
 // Copyright 2015 Gael Huber
 #pragma once
 
-#include "Platform.h"
+#include "ZoofariCore.h"
 
-#include ZOOFARI_INCLUDE_HEADER(Memory\CNoAllocatorPolicy)
+#include ZOOFARI_INCLUDE(Memory/CNoAllocatorPolicy.h)
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
 ZOOFARI_BEGIN_NAMESPACE(common)
@@ -36,4 +36,4 @@ ZOOFARI_END_NAMESPACE()
 ZOOFARI_END_NAMESPACE()
 ZOOFARI_END_NAMESPACE()
 
-#include ZOOFARI_INCLUDE_INLINE(CCreate)
+#include ZOOFARI_INCLUDE(CCreate.inl)

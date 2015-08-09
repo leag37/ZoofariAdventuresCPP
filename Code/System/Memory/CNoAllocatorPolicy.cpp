@@ -2,8 +2,8 @@
 // Copyright 2015 Gael Huber
 #include "CNoAllocatorPolicy.h"
 
-#include ZOOFARI_INCLUDE_HEADER(Core\Assert)
-#include ZOOFARI_INCLUDE_HEADER(GlobalAllocator\CGlobalAllocator)
+#include ZOOFARI_INCLUDE(Core/Assert.h)
+#include ZOOFARI_INCLUDE(GlobalAllocator/CGlobalAllocator.h)
 
 #include ZOOFARI_INCLUDE_STL(stdlib.h)
 

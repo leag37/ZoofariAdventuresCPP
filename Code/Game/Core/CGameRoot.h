@@ -2,7 +2,7 @@
 // Copyright 2015 Gael Huber
 #pragma once
 
-#include "Core\CRoot.h"
+#include "Core/CRoot.h"
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
 ZOOFARI_BEGIN_NAMESPACE(game)

@@ -2,7 +2,7 @@
 // Copyright 2015 Gael huber
 #pragma once
 
-#include "Core\Platform.h"
+#include "Core/ZoofariCore.h"
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
 ZOOFARI_BEGIN_NAMESPACE(common)
@@ -22,7 +22,7 @@ public:
 	/**
 	 * ctor
 	 */
-	CPtr();
+    CPtr();
 
 	/**
 	 * ctor
@@ -30,7 +30,7 @@ public:
 	 * @param inPtr The source pointer
 	 */
 	template <class PFromType>
-	explicit CPtr(PFromType * inPtr);
+    explicit CPtr(PFromType * inPtr);
 
 private:
 	/**

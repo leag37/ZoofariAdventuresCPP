@@ -2,8 +2,8 @@
 // Copyright 2015 Gael Huber
 #pragma once
 
-#include "Core\Platform.h"
-#include ZOOFARI_INCLUDE_HEADER(IAllocatorPolicy)
+#include "Core/ZoofariCore.h"
+#include ZOOFARI_INCLUDE(IAllocatorPolicy.h)
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
 ZOOFARI_BEGIN_NAMESPACE(system)

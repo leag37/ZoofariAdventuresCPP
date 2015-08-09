@@ -2,9 +2,9 @@
 // Copyright 2015 Gael huber
 #pragma once
 
-#include "Core\Platform.h"
+#include "Core/ZoofariCore.h"
 
-#include ZOOFARI_INCLUDE_HEADER(Core\CCreate)
+#include ZOOFARI_INCLUDE(Core/CCreate.h)
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
 ZOOFARI_BEGIN_NAMESPACE(common)
@@ -81,4 +81,4 @@ ZOOFARI_END_NAMESPACE()
 ZOOFARI_END_NAMESPACE()
 ZOOFARI_END_NAMESPACE()
 
-#include ZOOFARI_INCLUDE_INLINE(CUniquePtr)
+#include ZOOFARI_INCLUDE(CUniquePtr.inl)

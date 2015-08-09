@@ -2,10 +2,10 @@
 // Copyright 2015 Gael Huber
 #pragma once
 
-#include "Core\ZoofariCore.h"
+#include "Core/ZoofariCore.h"
 
-#include ZOOFARI_INCLUDE_HEADER(CMemBlock)
-#include ZOOFARI_INCLUDE_HEADER(CMemNode)
+#include ZOOFARI_INCLUDE(CMemBlock.h)
+#include ZOOFARI_INCLUDE(CMemNode.h)
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
 ZOOFARI_BEGIN_NAMESPACE(system)
@@ -27,7 +27,7 @@ public:
 	CLocalMemHeap();
 	~CLocalMemHeap();
 
-	TVoidPtr GetMem(TCSizeType inSize, TCSizeType inClassIndex);
+	TVoidPtr GetMem(TCSizeType inSize, TCSizeType inClassIndex, TSizeType & outAllocatedSizeClass);
 	CMemBlock* FreeMem(TVoidPtr inAddr, TCSizeType inClassIndex, TCSizeType inSizeClass);
 
 	TVoid DonateNode(CMemNode* inNode, TCSizeType inSizeClass, TCSizeType inClassIndex);
@@ -45,7 +45,7 @@ private:
 	size_t m_CacheSize;
 
 	// In use size of the cache
-	size_t m_InUseBytes;
+	//size_t m_InUseBytes;
 };
 
 ZOOFARI_END_NAMESPACE()
