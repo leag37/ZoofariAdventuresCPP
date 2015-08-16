@@ -103,7 +103,7 @@ CGlobalMemHeap::TVoidPtr CGlobalMemHeap::GetBlock(TCSizeType inSize, TCSizeType 
 			// If the previous block does not exist, the selected block was the list start, so just destroy the list
 			if (pPreviousBlock == nullptr)
 			{
-				m_Blocks[inClassIndex] = nullptr;
+				m_Blocks[inClassIndex] = m_Blocks[inClassIndex]->m_Next;
 			}
 			else
 			{

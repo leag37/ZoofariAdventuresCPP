@@ -52,7 +52,7 @@ void* CGlobalAllocator::Allocate(size_t const inSize)
 	void* addr(nullptr);
 
 	// Get size class and round allocation
-	size_t sizeClass(std::max(inSize, static_cast<size_t>(8)));
+ 	size_t sizeClass(std::max(inSize, static_cast<size_t>(8)));
 	size_t classIndex = 1;
 
 	if (inSize <= CMemConst::PAGE)
