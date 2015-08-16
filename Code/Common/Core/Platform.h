@@ -30,6 +30,8 @@
 	_class(_class &&) = delete;					\
 	_class & operator=(_class &&) = delete;
         
+#define ZOOFARI_INLINE inline
+
 #if defined(ZOOFARI_WINDOWS)
     #define THREADLOCAL thread_local
     #define ZOOFARI_GLOBAL inline
