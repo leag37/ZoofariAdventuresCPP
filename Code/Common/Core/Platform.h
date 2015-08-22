@@ -29,7 +29,9 @@
 #define ZOOFARI_MOVE_PROTECT(_class)			\
 	_class(_class &&) = delete;					\
 	_class & operator=(_class &&) = delete;
-        
+
+#define ZOOFARI_INLINE inline
+
 #if defined(ZOOFARI_WINDOWS)
     #define THREADLOCAL thread_local
     #define ZOOFARI_GLOBAL inline
@@ -37,5 +39,5 @@
 #elif defined(ZOOFARI_DARWIN)
     #define THREADLOCAL __thread
     #define ZOOFARI_GLOBAL
-        
+
 #endif
