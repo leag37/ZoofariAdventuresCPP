@@ -59,9 +59,9 @@ public:
 	template <class TOtherPtr>
 	bool operator!=(CUniquePtr<TOtherPtr> const & inOther) const;
 
-	TPtr* Get() const;
+	TPtr * Get() const;
 
-	TPtr* operator->() const;
+	TPtr * operator->() const;
 
 	TPtr & operator*() const;
 
