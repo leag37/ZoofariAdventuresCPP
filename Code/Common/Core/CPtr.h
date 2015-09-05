@@ -34,7 +34,7 @@ public:
 	template <class TFromPtr>
 	explicit CPtr(CUniquePtr<TFromPtr> const & inPtr);
 
-	template <class TFromPtr, TAllocatorPolicy>
+	template <class TFromPtr, class TAllocatorPolicy>
 	explicit CPtr(CUniquePtr<TPtr, TAllocatorPolicy> const & inPtr);
 
 	explicit CPtr(CPtr const & inPtr);
