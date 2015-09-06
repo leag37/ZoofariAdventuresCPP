@@ -7,6 +7,8 @@
 #include ZOOFARI_INCLUDE(Core/CCreate.h)
 #include ZOOFARI_INCLUDE(Memory/CNoAllocatorPolicy.h)
 
+#include ZOOFARI_INCLUDE(Core/CAtomic.h)
+
 #include ZOOFARI_INCLUDE_STL(vector)
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
@@ -34,6 +36,11 @@ CGameRoot::~CGameRoot()
 void CGameRoot::Initialize()
 {
 	CRoot::Initialize();
+    
+    //common::core::CAtomic<int> a(1);
+    //common::core::CAtomic<int> b(std::move(a));
+    //b.Increment();
+    
 
 	//common::core::CUniquePtr<Hello> pHello = common::core::CCreate<Hello>();	
 	//common::core::CUniquePtr<Hello> pHello2 = common::core::CCreate<Hello>(1);
