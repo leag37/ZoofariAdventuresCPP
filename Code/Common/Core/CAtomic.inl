@@ -24,6 +24,25 @@ CAtomic<T> & CAtomic<T>::operator=(T const inValue)
     return *this;
 }
 
+template <typename T>
+CAtomic<T*>::CAtomic()
+: TBase()
+{
+}
+
+template <typename T>
+CAtomic<T*>::CAtomic(T* const inValue)
+: TBase(inValue)
+{
+}
+
+template <typename T>
+CAtomic<T*> & CAtomic<T*>::operator=(T* const inValue)
+{
+    Store(inValue);
+    return *this;
+}
+
 ZOOFARI_END_NAMESPACE()
 ZOOFARI_END_NAMESPACE()
 ZOOFARI_END_NAMESPACE()
