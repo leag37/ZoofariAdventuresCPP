@@ -4,36 +4,37 @@
 
 #include "Core/ZoofariCore.h"
 
-//#include ZOOFARI_INCLUDE(Core/CPtr.h)
+#include ZOOFARI_INCLUDE(CSingleton.h)
 #include ZOOFARI_INCLUDE(Core/CUniquePtr.h)
-#include ZOOFARI_INCLUDE(Stl/StlMap.h)
+#include ZOOFARI_INCLUDE(Core/ISystem.h)
+#include ZOOFARI_INCLUDE(Reflection/Reflection.h)
+#include ZOOFARI_INCLUDE(Stl/StlUnorderedMap.h)
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
 ZOOFARI_BEGIN_NAMESPACE(system)
 ZOOFARI_BEGIN_NAMESPACE(core)
 
-class ISystem;
-
 /** \addtogroup system
  *	@{
  */
 
-class CSystemRegistry
+class CSystemRegistry : public CSingleton<CSystemRegistry>
 {
 public:
+	template <class TSystem>
+	common::core::CUniquePtr<TSystem> const & GetSystem() const;
+
+	template <class TSystem>
+	common::core::CUniquePtr<TSystem> const & CreateSystem();
+
+private:
 	CSystemRegistry();
 
-	~CSystemRegistry();
-
-	//template <class TSystem>
-	//common::core::CPtr<TSystem> GetSystem();
-
-	//template <class TSystem>
-	//common::core::CPtr<TSystem> CreateSystem();
+	virtual ~CSystemRegistry();
 
 private:
     // TODO: change to unordered_map and to u64
-	map<unsigned long long, common::core::CUniquePtr<ISystem>> m_Systems;
+	unordered_map<u64, common::core::CUniquePtr<system::core::ISystem>> m_Systems;
 	
 };
 

@@ -9,5 +9,6 @@
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
 
 using ::std::move;
+using ::std::forward;
 
 ZOOFARI_END_NAMESPACE()

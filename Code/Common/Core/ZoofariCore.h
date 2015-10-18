@@ -2,5 +2,5 @@
 // Copyright 2015 Gael Huber
 
 #include "Platform.h"
-#include "Typedefs.h"
-#include "Assert.h"
+#include ZOOFARI_INCLUDE(Typedefs.h)
+#include ZOOFARI_INCLUDE(Assert.h)

@@ -13,15 +13,6 @@ ZOOFARI_BEGIN_NAMESPACE(zoofari)
 ZOOFARI_BEGIN_NAMESPACE(game)
 ZOOFARI_BEGIN_NAMESPACE(core)
 
-/*class Hello
-{
-public:
-	Hello() {}
-	Hello(int inA) : a(inA) {}
-private:
-	int a;
-};*/
-
 //*************************************************************************************************
 CGameRoot::CGameRoot()
 {}

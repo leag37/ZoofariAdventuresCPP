@@ -39,3 +39,5 @@
     #define ZOOFARI_GLOBAL
         
 #endif
+
+#define ZOOFARI_INLINE inline
