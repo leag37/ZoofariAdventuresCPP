@@ -19,7 +19,7 @@ ZOOFARI_BEGIN_NAMESPACE(core)
  * @tparam TPtr The type stored in the unique pointer
  * @tparam TAllocatorPolicy The allocator type being used to allocate and free the object
  */
-template <class TPtr, class TAllocatorPolicy = system::memory::CNoAllocatorPolicy>
+template <class TPtr, class TAllocatorPolicy = system::memory::CNoAllocatorPolicy, bool bAllowWeakPtr = false/*= zoofari::allow_weakptr<TPtr>::value*/>
 class CUniquePtr
 {
 	ZOOFARI_COPY_PROTECT(CUniquePtr);
@@ -175,12 +175,21 @@ private:
 	 */
 	void Destroy();
 
-private:
+protected:
 	/**
 	* Raw pointer
 	*/
 	TPtr* m_Ptr;
 };
+
+//template <class TPtr, class TAllocatorPolicy>
+//class CUniquePtr<TPtr, TAllocatorPolicy, true> : public CUniquePtr<TPtr, TAllocatorPolicy, false>
+//{
+//public:
+//
+//private:
+//};
+
 
 /** @} */
 

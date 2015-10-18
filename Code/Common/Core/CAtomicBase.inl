@@ -115,6 +115,20 @@ CAtomicBase<T, true>::CAtomicBase(T const inValue)
 
 //--------------------------------------------------------------------------------------------------
 template <typename T>
+bool CAtomicBase<T, true>::operator==(T const inValue) const
+{
+	return Load() == inValue;
+}
+
+//--------------------------------------------------------------------------------------------------
+template <typename T>
+bool CAtomicBase<T, true>::operator!=(T const inValue) const
+{
+	return Load() != inValue;
+}
+
+//--------------------------------------------------------------------------------------------------
+template <typename T>
 T CAtomicBase<T, true>::FetchAdd(T const inValue, EMemoryOrder const inOrder)
 {
     return TBase::m_Value.fetch_add(inValue, TBase::LookupOrder(inOrder));

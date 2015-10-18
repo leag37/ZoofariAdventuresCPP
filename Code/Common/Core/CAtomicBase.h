@@ -53,6 +53,9 @@ public:
     CAtomicBase();
     CAtomicBase(T const inValue);
     CAtomicBase & operator=(T const inValue);
+
+	bool operator==(T const inValue) const;
+	bool operator!=(T const inValue) const;
     
     T FetchAdd(T const inValue, EMemoryOrder const inOrder = EMemoryOrder::SeqCst);
     T FetchSub(T const inValue, EMemoryOrder const inOrder = EMemoryOrder::SeqCst);

@@ -1,6 +1,7 @@
 // Filename: CUniquePtr.inl
 // Copyright 2015 Gael Huber
 
+#include "CUniquePtr.h"
 #include ZOOFARI_INCLUDE(Assert.h)
 #include ZOOFARI_INCLUDE_STL(utility)
 
@@ -9,77 +10,77 @@ ZOOFARI_BEGIN_NAMESPACE(common)
 ZOOFARI_BEGIN_NAMESPACE(core)
 
 //-------------------------------------------------------------------------------------------------
-template <class TPtr, class TAllocatorPolicy>
-ZOOFARI_INLINE CUniquePtr<TPtr, TAllocatorPolicy>::CUniquePtr()
+template <class TPtr, class TAllocatorPolicy, bool bAllowWeakPtr>
+ZOOFARI_INLINE CUniquePtr<TPtr, TAllocatorPolicy, bAllowWeakPtr>::CUniquePtr()
 	: m_Ptr(nullptr)
 {}
 
 //-------------------------------------------------------------------------------------------------
-template <class TPtr, class TAllocatorPolicy>
-ZOOFARI_INLINE CUniquePtr<TPtr, TAllocatorPolicy>::CUniquePtr(nullptr_t /*inPtr*/)
+template <class TPtr, class TAllocatorPolicy, bool bAllowWeakPtr>
+ZOOFARI_INLINE CUniquePtr<TPtr, TAllocatorPolicy, bAllowWeakPtr>::CUniquePtr(nullptr_t /*inPtr*/)
 	: m_Ptr(nullptr)
 {}
 
 //-------------------------------------------------------------------------------------------------
-template <class TPtr, class TAllocatorPolicy>
-ZOOFARI_INLINE CUniquePtr<TPtr, TAllocatorPolicy>::CUniquePtr(CCreate<TPtr, TAllocatorPolicy> && inCreator)
+template <class TPtr, class TAllocatorPolicy, bool bAllowWeakPtr>
+ZOOFARI_INLINE CUniquePtr<TPtr, TAllocatorPolicy, bAllowWeakPtr>::CUniquePtr(CCreate<TPtr, TAllocatorPolicy> && inCreator)
 	: m_Ptr(inCreator.Release())
 {}
 
 //-------------------------------------------------------------------------------------------------
-template <class TPtr, class TAllocatorPolicy>
+template <class TPtr, class TAllocatorPolicy, bool bAllowWeakPtr>
 template <typename TDerivedPtr>
-ZOOFARI_INLINE CUniquePtr<TPtr, TAllocatorPolicy>::CUniquePtr(CCreate<TDerivedPtr, TAllocatorPolicy> && inCreate)
+ZOOFARI_INLINE CUniquePtr<TPtr, TAllocatorPolicy, bAllowWeakPtr>::CUniquePtr(CCreate<TDerivedPtr, TAllocatorPolicy> && inCreate)
 	: m_Ptr(inCreator.Release())
 {}
 
 //-------------------------------------------------------------------------------------------------
-template <class TPtr, class TAllocatorPolicy>
-ZOOFARI_INLINE CUniquePtr<TPtr, TAllocatorPolicy>::CUniquePtr(CUniquePtr && inOther)
+template <class TPtr, class TAllocatorPolicy, bool bAllowWeakPtr>
+ZOOFARI_INLINE CUniquePtr<TPtr, TAllocatorPolicy, bAllowWeakPtr>::CUniquePtr(CUniquePtr && inOther)
 	: m_Ptr(std::move(inOther.m_Ptr))
 {}
 
 //-------------------------------------------------------------------------------------------------
-template <class TPtr, class TAllocatorPolicy>
+template <class TPtr, class TAllocatorPolicy, bool bAllowWeakPtr>
 template <class TOtherPtr>
-ZOOFARI_INLINE CUniquePtr<TPtr, TAllocatorPolicy>::CUniquePtr(CUniquePtr<TOtherPtr> && inOther)
+ZOOFARI_INLINE CUniquePtr<TPtr, TAllocatorPolicy, bAllowWeakPtr>::CUniquePtr(CUniquePtr<TOtherPtr> && inOther)
 	: m_Ptr(static_cast<TPtr*>(std::move(inOther.m_Ptr)))
 {}
 
 //-------------------------------------------------------------------------------------------------
-template <class TPtr, class TAllocatorPolicy>
-ZOOFARI_INLINE CUniquePtr<TPtr, TAllocatorPolicy>::~CUniquePtr()
+template <class TPtr, class TAllocatorPolicy, bool bAllowWeakPtr>
+ZOOFARI_INLINE CUniquePtr<TPtr, TAllocatorPolicy, bAllowWeakPtr>::~CUniquePtr()
 {
 	Destroy();
 }
 
 //-------------------------------------------------------------------------------------------------
-template <class TPtr, class TAllocatorPolicy>
-ZOOFARI_INLINE CUniquePtr<TPtr, TAllocatorPolicy> & CUniquePtr<TPtr, TAllocatorPolicy>::operator=(nullptr_t /*inPtr*/)
+template <class TPtr, class TAllocatorPolicy, bool bAllowWeakPtr>
+ZOOFARI_INLINE CUniquePtr<TPtr, TAllocatorPolicy, bAllowWeakPtr> & CUniquePtr<TPtr, TAllocatorPolicy, bAllowWeakPtr>::operator=(nullptr_t /*inPtr*/)
 {
 	Destroy();
 }
 
 //-------------------------------------------------------------------------------------------------
-template <class TPtr, class TAllocatorPolicy>
-ZOOFARI_INLINE CUniquePtr<TPtr, TAllocatorPolicy> & CUniquePtr<TPtr, TAllocatorPolicy>::operator=(CCreate<TPtr, TAllocatorPolicy> && inCreator)
+template <class TPtr, class TAllocatorPolicy, bool bAllowWeakPtr>
+ZOOFARI_INLINE CUniquePtr<TPtr, TAllocatorPolicy, bAllowWeakPtr> & CUniquePtr<TPtr, TAllocatorPolicy, bAllowWeakPtr>::operator=(CCreate<TPtr, TAllocatorPolicy> && inCreator)
 {
 	Destroy();
 	m_Ptr = inCreator.Release();
 }
 
 //-------------------------------------------------------------------------------------------------
-template <class TPtr, class TAllocatorPolicy>
+template <class TPtr, class TAllocatorPolicy, bool bAllowWeakPtr>
 template <typename TDerivedPtr>
-ZOOFARI_INLINE CUniquePtr<TPtr, TAllocatorPolicy> & CUniquePtr<TPtr, TAllocatorPolicy>::operator=(CCreate<TDerivedPtr, TAllocatorPolicy> && inCreate)
+ZOOFARI_INLINE CUniquePtr<TPtr, TAllocatorPolicy, bAllowWeakPtr> & CUniquePtr<TPtr, TAllocatorPolicy, bAllowWeakPtr>::operator=(CCreate<TDerivedPtr, TAllocatorPolicy> && inCreate)
 {
 	Destroy();
 	m_Ptr = inCreator.Release();
 }
 
 //-------------------------------------------------------------------------------------------------
-template <class TPtr, class TAllocatorPolicy>
-ZOOFARI_INLINE CUniquePtr<TPtr, TAllocatorPolicy> & CUniquePtr<TPtr, TAllocatorPolicy>::operator=(CUniquePtr && inOther)
+template <class TPtr, class TAllocatorPolicy, bool bAllowWeakPtr>
+ZOOFARI_INLINE CUniquePtr<TPtr, TAllocatorPolicy, bAllowWeakPtr> & CUniquePtr<TPtr, TAllocatorPolicy, bAllowWeakPtr>::operator=(CUniquePtr && inOther)
 {
 	if (this != &inOther)
 	{
@@ -92,9 +93,9 @@ ZOOFARI_INLINE CUniquePtr<TPtr, TAllocatorPolicy> & CUniquePtr<TPtr, TAllocatorP
 }
 
 //-------------------------------------------------------------------------------------------------
-template <class TPtr, class TAllocatorPolicy>
+template <class TPtr, class TAllocatorPolicy, bool bAllowWeakPtr>
 template <class TDerivedPtr>
-ZOOFARI_INLINE CUniquePtr<TPtr, TAllocatorPolicy> & CUniquePtr<TPtr, TAllocatorPolicy>::operator=(CUniquePtr<TDerivedPtr> && inOther)
+ZOOFARI_INLINE CUniquePtr<TPtr, TAllocatorPolicy, bAllowWeakPtr> & CUniquePtr<TPtr, TAllocatorPolicy, bool bAllowWeakPtr>::operator=(CUniquePtr<TDerivedPtr> && inOther)
 {
 	if (this != &inOther)
 	{
@@ -105,23 +106,23 @@ ZOOFARI_INLINE CUniquePtr<TPtr, TAllocatorPolicy> & CUniquePtr<TPtr, TAllocatorP
 }
 
 //-------------------------------------------------------------------------------------------------
-template <class TPtr, class TAllocatorPolicy>
-ZOOFARI_INLINE bool CUniquePtr<TPtr, TAllocatorPolicy>::operator==(CUniquePtr const & inOther) const
+template <class TPtr, class TAllocatorPolicy, bool bAllowWeakPtr>
+ZOOFARI_INLINE bool CUniquePtr<TPtr, TAllocatorPolicy, bAllowWeakPtr>::operator==(CUniquePtr const & inOther) const
 {
 	return m_Ptr == inOther.m_Ptr;
 }
 
 //-------------------------------------------------------------------------------------------------
-template <class TPtr, class TAllocatorPolicy>
+template <class TPtr, class TAllocatorPolicy, bool bAllowWeakPtr>
 template <class TOtherPtr>
-ZOOFARI_INLINE bool CUniquePtr<TPtr, TAllocatorPolicy>::operator==(CUniquePtr<TOtherPtr> const & inOther) const
+ZOOFARI_INLINE bool CUniquePtr<TPtr, TAllocatorPolicy, bAllowWeakPtr>::operator==(CUniquePtr<TOtherPtr> const & inOther) const
 {
 	return m_Ptr == inOther.m_Ptr;
 }
 
 //-------------------------------------------------------------------------------------------------
-template <class TPtr, class TAllocatorPolicy>
-ZOOFARI_INLINE bool CUniquePtr<TPtr, TAllocatorPolicy>::operator==(nullptr_t /*inPtr*/) const
+template <class TPtr, class TAllocatorPolicy, bool bAllowWeakPtr>
+ZOOFARI_INLINE bool CUniquePtr<TPtr, TAllocatorPolicy, bAllowWeakPtr>::operator==(nullptr_t /*inPtr*/) const
 {
 	return m_Ptr == nullptr;
 }
