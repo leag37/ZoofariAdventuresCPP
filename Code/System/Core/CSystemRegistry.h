@@ -33,7 +33,7 @@ public:
 
 private:
     // TODO: change to unordered_map and to u64
-	map<unsigned long long, common::core::CUniquePtr<ISystem>> m_Systems;
+	//map<unsigned long long, common::core::CUniquePtr<ISystem>> m_Systems;
 	
 };
 
