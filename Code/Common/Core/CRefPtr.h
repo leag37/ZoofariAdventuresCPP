@@ -10,7 +10,7 @@ ZOOFARI_BEGIN_NAMESPACE(zoofari)
 ZOOFARI_BEGIN_NAMESPACE(common)
 ZOOFARI_BEGIN_NAMESPACE(core)
 
-template <class TPtr, class TDeleter = std::default_delete<TPtr>>
+template <class TPtr, class TAllocatorPolicy = system::memory::CNoAllocatorPolicy>
 class CRefPtr
 {
 	template <class TPtr>
