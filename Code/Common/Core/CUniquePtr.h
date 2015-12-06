@@ -4,7 +4,10 @@
 
 #include "Core/ZoofariCore.h"
 
-#include ZOOFARI_INCLUDE(Core/CCreate.h)
+#include ZOOFARI_INCLUDE(CCreate.h)
+#include ZOOFARI_INCLUDE(CRefCounter.h)
+#include ZOOFARI_INCLUDE(TypeTraits.h)
+#include ZOOFARI_INCLUDE_STL(memory)
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
 ZOOFARI_BEGIN_NAMESPACE(common)
@@ -19,7 +22,7 @@ ZOOFARI_BEGIN_NAMESPACE(core)
  * @tparam TPtr The type stored in the unique pointer
  * @tparam TAllocatorPolicy The allocator type being used to allocate and free the object
  */
-template <class TPtr, class TAllocatorPolicy = system::memory::CNoAllocatorPolicy>
+template <class TPtr, class TAllocatorPolicy = system::memory::CNoAllocatorPolicy, bool bAllowWeakPtr = traits::allow_weakptr<TPtr>::value>
 class CUniquePtr
 {
 	ZOOFARI_COPY_PROTECT(CUniquePtr);
@@ -47,7 +50,7 @@ public:
 	 * @tparam TDerivedPtr The derived pointer being constructed. This type will be stored into the base class.
 	 * @param inCreate The creator for this pointer
 	 */
-	template <typename TDerivedPtr>
+	template <class TDerivedPtr>
 	CUniquePtr(CCreate<TDerivedPtr, TAllocatorPolicy> && inCreate);
 
 	/**
@@ -67,7 +70,7 @@ public:
 	/**
 	 * dtor
 	 */
-	~CUniquePtr();
+	virtual ~CUniquePtr();
 
 	/**
 	 * Assignment operator
@@ -89,7 +92,7 @@ public:
 	 * @param inCreate The creator of hte pointer to assign
 	 * @return Returns the assigned pointer
 	 */
-	template <typename TDerivedPtr>
+	template <class TDerivedPtr>
 	CUniquePtr & operator=(CCreate<TDerivedPtr, TAllocatorPolicy> && inCreate);
 
 	/**
@@ -181,6 +184,61 @@ private:
 	*/
 	TPtr* m_Ptr;
 };
+
+template <class TPtr, class TAllocatorPolicy>
+class CUniquePtr<TPtr, TAllocatorPolicy, true> : public CUniquePtr<TPtr, TAllocatorPolicy, false>
+{
+	typedef CUniquePtr<TPtr, TAllocatorPolicy, false> TBase;
+
+	ZOOFARI_COPY_PROTECT(CUniquePtr);
+
+public:
+	/**
+	 * ctor
+	 */
+	CUniquePtr();
+	
+	/**
+	 * ctor
+	 * @param inPtr The null pointer to assign to this unique pointer
+	 */
+	CUniquePtr(nullptr_t inPtr);
+
+	/**
+	 * ctor
+	 * @param inCreate The creation source for this pointer
+	 */
+	CUniquePtr(CCreate<TPtr, TAllocatorPolicy> && inCreate);
+
+	CUniquePtr(CUniquePtr && inOther);
+	
+	virtual ~CUniquePtr();
+
+	CUniquePtr & operator=(CCreate<TPtr, TAllocatorPolicy> && inCreate);
+
+	/**
+	 * Assignment operator
+	 * @tparam TDerivedPtr The derived pointer type
+	 * @param inCreate The creator of hte pointer to assign
+	 * @return Returns the assigned pointer
+	 */
+	template <class TDerivedPtr>
+	CUniquePtr & operator=(CCreate<TDerivedPtr, TAllocatorPolicy> && inCreate);
+
+	/**
+	 * Assignment operator
+	 * @param inOther The pointer to assign
+	 * @return Returns the assigned pointer
+	 */
+	CUniquePtr & operator=(CUniquePtr && inOther);
+
+private:
+	void Destroy();
+
+private:
+	CRefCounter * m_Counter;
+};
+
 
 /** @} */
 
