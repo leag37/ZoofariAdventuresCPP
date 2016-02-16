@@ -4,7 +4,7 @@
 
 #include "Core/ZoofariCore.h"
 
-//#include ZOOFARI_INCLUDE(Core/CSystemRegistry.h)
+#include ZOOFARI_INCLUDE(CSystemRegistry.h)
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
 ZOOFARI_BEGIN_NAMESPACE(system)
@@ -46,7 +46,7 @@ protected:
 	/**
 	 * The system registry containing all primary subsystems
 	 */
-	//SystemRegistry m_Registry;
+	CUniquePtr<CSystemRegistry> m_Registry;
 
 	/**
 	 * The system-level FSM

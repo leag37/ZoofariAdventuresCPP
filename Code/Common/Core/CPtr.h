@@ -3,10 +3,9 @@
 #pragma once
 
 #include "Core/ZoofariCore.h"
+#include "TypeTraits.h"
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
-ZOOFARI_BEGIN_NAMESPACE(common)
-ZOOFARI_BEGIN_NAMESPACE(core)
 
 /** \addtogroup common
  *	@{
@@ -18,11 +17,26 @@ ZOOFARI_BEGIN_NAMESPACE(core)
 template <class PType>
 class CPtr
 {
+	template <class TDerivedPtr>
+	friend class CPtr;
+
 public:
 	/**
 	 * ctor
 	 */
-    CPtr();
+	CPtr() 
+		: m_Ptr(nullptr)
+	{}
+
+	CPtr(PType * inPtr)
+		: m_Ptr(inPtr)
+	{}
+
+	template <class TDerivedPtr>
+	CPtr(CPtr<TDerivedPtr> const & inOther)
+		: m_Ptr(static_cast<TDerivedPtr*>(inOther.m_Ptr))
+	{
+	}
 
 	/**
 	 * ctor
@@ -30,7 +44,18 @@ public:
 	 * @param inPtr The source pointer
 	 */
 	template <class PFromType>
-    explicit CPtr(PFromType * inPtr);
+    explicit CPtr(PFromType * inPtr)
+		: m_Ptr(static_cast<PType*>(inPtr))
+	{}
+
+	template <class PtrWrapper>
+	CPtr(PtrWrapper const & inPtrWrapper)
+		: m_Ptr(static_cast<PType*>(inPtrWrapper.Get()))
+	{
+		static_assert(traits::is_smart_ptr<PtrWrapper>::value, "[CPtr] Type is not a smart pointer");
+	}
+
+	PType* Get() const { return m_Ptr; }
 
 private:
 	/**
@@ -39,8 +64,12 @@ private:
 	PType* m_Ptr;
 };
 
+template <class TPtr>
+struct traits::is_smart_ptr<CPtr<TPtr>>
+{
+	static const bool value = true;
+};
+
 /** @} */
 
-ZOOFARI_END_NAMESPACE()
-ZOOFARI_END_NAMESPACE()
 ZOOFARI_END_NAMESPACE()

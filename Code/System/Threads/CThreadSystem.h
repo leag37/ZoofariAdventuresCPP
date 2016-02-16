@@ -18,6 +18,9 @@ public:
 	CThreadSystem();
 	virtual ~CThreadSystem();
 
+	void Initialize();
+	void Shutdown();
+
 private:
 
 };

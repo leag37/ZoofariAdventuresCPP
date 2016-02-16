@@ -12,5 +12,11 @@ struct allow_weakptr
 	static const bool value = false;
 };
 
+template <typename T>
+struct is_smart_ptr
+{
+	static const bool value = false;
+};
+
 ZOOFARI_END_NAMESPACE()
 ZOOFARI_END_NAMESPACE()

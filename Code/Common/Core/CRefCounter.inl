@@ -4,8 +4,7 @@
 #include ZOOFARI_INCLUDE(CRefCounter.h)
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
-ZOOFARI_BEGIN_NAMESPACE(common)
-ZOOFARI_BEGIN_NAMESPACE(core)
+ZOOFARI_BEGIN_NAMESPACE(ptrdetails)
 
 template <bool bStrong, bool bWeak>
 void CRefCounter::IncrementRef()
@@ -35,6 +34,5 @@ void CRefCounter::DecrementRef()
 	}
 }
 
-ZOOFARI_END_NAMESPACE()
 ZOOFARI_END_NAMESPACE()
 ZOOFARI_END_NAMESPACE()

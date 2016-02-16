@@ -22,7 +22,7 @@ class CSingleton
 	ZOOFARI_MOVE_PROTECT(CSingleton);
 
 public:
-	typedef common::core::CUniquePtr<TSingleton> TPointer;
+	typedef CUniquePtr<TSingleton> TPointer;
 
 public:
 	static TPointer const & GetInstance();

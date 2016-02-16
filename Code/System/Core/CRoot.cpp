@@ -3,6 +3,7 @@
 #include "CRoot.h"
 
 #include ZOOFARI_INCLUDE(Memory/GlobalAllocator/CGlobalAllocator.h)
+#include ZOOFARI_INCLUDE(Threads/CThreadSystem.h)
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
 ZOOFARI_BEGIN_NAMESPACE(system)
@@ -23,16 +24,17 @@ void CRoot::Initialize()
 	memory::CGlobalAllocator::Get().Initialize();
 
 	// Initialize base systems (threading, rendering, physics, etc.)
-	
+	//---------------------------------------------------------------
+
+	// Initialize thread system
+	m_Registry = CCreate<CSystemRegistry>();
+	CPtr<threads::CThreadSystem> const pThreadSystem(m_Registry->CreateSystem<threads::CThreadSystem>());
+	//pThreadSystem->Initialize();
+
 	// Initialize render system
 	//CPtr<CRenderSystem> pRenderSystem(m_Registry.Create<CRenderSystem>());
 
-	// Initialize thread system
-	//CPtr<CThreadSystem> pThreadSystem(m_Registry.Create<CThreadSystem>());
-	//CMake<CThreadSystem>());
-	//pThreadSystem->ReserveRenderThread();
-	//pThreadSystem->RegisterMainThread();
-	//pThreadSystem->Initialize();
+	
 }
 
 //*************************************************************************************************

@@ -6,8 +6,7 @@
 #include ZOOFARI_INCLUDE(CAtomic.h)
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
-ZOOFARI_BEGIN_NAMESPACE(common)
-ZOOFARI_BEGIN_NAMESPACE(core)
+ZOOFARI_BEGIN_NAMESPACE(ptrdetails)
 
 class CRefCounter
 {
@@ -28,11 +27,10 @@ public:
 	bool HasWeakRef() const;
 
 private:
-	CAtomic<s32> m_StrongRef;
-	CAtomic<s32> m_WeakRef;
+	common::core::CAtomic<s32> m_StrongRef;
+	common::core::CAtomic<s32> m_WeakRef;
 };
 
-ZOOFARI_END_NAMESPACE()
 ZOOFARI_END_NAMESPACE()
 ZOOFARI_END_NAMESPACE()
 

@@ -11,11 +11,11 @@ ZOOFARI_BEGIN_NAMESPACE(core)
 
 //-------------------------------------------------------------------------------------------------
 template <class TSingleton>
-common::core::CUniquePtr<TSingleton> CSingleton<TSingleton>::sInstance = nullptr;
+CUniquePtr<TSingleton> CSingleton<TSingleton>::sInstance = nullptr;
 
 //-------------------------------------------------------------------------------------------------
 template <class TSingleton>
-ZOOFARI_INLINE common::core::CUniquePtr<TSingleton> const & CSingleton<TSingleton>::GetInstance() const
+ZOOFARI_INLINE CUniquePtr<TSingleton> const & CSingleton<TSingleton>::GetInstance() const
 {
 	ZOOFARI_ASSERT(sInstance != nullptr);
 	return sInstance;
@@ -23,7 +23,7 @@ ZOOFARI_INLINE common::core::CUniquePtr<TSingleton> const & CSingleton<TSingleto
 
 //-------------------------------------------------------------------------------------------------
 template <class TSingleton>
-ZOOFARI_INLINE common::core::CUniquePtr<TSingleton> const & CSingleton<TSingleton>::CreateInstance()
+ZOOFARI_INLINE CUniquePtr<TSingleton> const & CSingleton<TSingleton>::CreateInstance()
 {
 	ZOOFARI_ASSERT(sInstance == nullptr);
 	sInstance = CCreate<TSingleton>();

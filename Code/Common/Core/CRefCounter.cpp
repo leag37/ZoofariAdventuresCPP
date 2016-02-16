@@ -4,8 +4,7 @@
 #include ZOOFARI_INCLUDE(CRefCounter.h)
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
-ZOOFARI_BEGIN_NAMESPACE(common)
-ZOOFARI_BEGIN_NAMESPACE(core)
+ZOOFARI_BEGIN_NAMESPACE(ptrdetails)
 
 //-------------------------------------------------------------------------------------------------
 CRefCounter::CRefCounter()
@@ -40,6 +39,5 @@ bool CRefCounter::HasWeakRef() const
 	return m_WeakRef.Load() != 0;
 }
 
-ZOOFARI_END_NAMESPACE()
 ZOOFARI_END_NAMESPACE()
 ZOOFARI_END_NAMESPACE()

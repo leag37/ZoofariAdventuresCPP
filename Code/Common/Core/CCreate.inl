@@ -4,8 +4,16 @@
 #include ZOOFARI_INCLUDE_STL(utility)
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
-ZOOFARI_BEGIN_NAMESPACE(common)
-ZOOFARI_BEGIN_NAMESPACE(core)
+
+template <class TPtr, class TAllocatorPolicy>
+ZOOFARI_INLINE CCreate<TPtr, TAllocatorPolicy>::CCreate()
+	: m_Ptr()
+{
+	TAllocatorPolicy allocator;
+	void* ptr(allocator.Allocate(sizeof(TPtr)));
+	::new (ptr) TPtr();
+	m_Ptr = static_cast<TPtr*>(ptr);
+}
 
 template <class TPtr, class TAllocatorPolicy>
 template <typename... TArgs>
@@ -19,9 +27,27 @@ inline CCreate<TPtr, TAllocatorPolicy>::CCreate(TArgs &&... inArgs)
 }
 
 template <class TPtr, class TAllocatorPolicy>
+ZOOFARI_INLINE CCreate<TPtr, TAllocatorPolicy>::CCreate(CCreate && inOther)
+	: m_Ptr(std::move(inOther.m_Ptr))
+{
+	inOther.m_Ptr = nullptr;
+}
+
+template <class TPtr, class TAllocatorPolicy>
 inline CCreate<TPtr, TAllocatorPolicy>::~CCreate()
 {
 	ZOOFARI_ASSERT(m_Ptr == nullptr);
+}
+
+template <class TPtr, class TAllocatorPolicy>
+CCreate<TPtr, TAllocatorPolicy> & CCreate<TPtr, TAllocatorPolicy>::operator=(CCreate && inOther)
+{
+	if (this != &inOther)
+	{
+		m_Ptr = std::move(inOther.m_Ptr);
+		inOther.m_Ptr = nullptr;
+	}
+	return *this;
 }
 
 template <class TPtr, class TAllocatorPolicy>
@@ -32,6 +58,4 @@ inline TPtr* CCreate<TPtr, TAllocatorPolicy>::Release()
 	return outResult;
 }
 
-ZOOFARI_END_NAMESPACE()
-ZOOFARI_END_NAMESPACE()
 ZOOFARI_END_NAMESPACE()

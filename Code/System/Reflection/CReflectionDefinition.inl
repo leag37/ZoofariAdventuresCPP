@@ -22,7 +22,7 @@ ZOOFARI_INLINE CReflectionDefinition<TReflectableClass>::CReflectionDefinition(T
 }
 
 template <class TReflectableClass>
-ZOOFARI_INLINE u64 CReflectionDefinition<TReflectableClass>::GetClassID() const
+ZOOFARI_INLINE TReflectableClassID CReflectionDefinition<TReflectableClass>::GetClassID() const
 {
 	return m_ClassID;
 }

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Core/ZoofariCore.h"
+#include "ReflectionUtils.h"
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
 ZOOFARI_BEGIN_NAMESPACE(system)
@@ -18,10 +19,10 @@ public:
 
 	CReflectionDefinition(TReflectableData && inData);
 
-	u64 GetClassID() const;
+	TReflectableClassID GetClassID() const;
 
 private:
-	u64 m_ClassID;
+	TReflectableClassID m_ClassID;
 	TReflectableData m_Data;
 };
 

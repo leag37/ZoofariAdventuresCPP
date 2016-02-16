@@ -7,8 +7,6 @@
 #include ZOOFARI_INCLUDE(Memory/CNoAllocatorPolicy.h)
 
 ZOOFARI_BEGIN_NAMESPACE(zoofari)
-ZOOFARI_BEGIN_NAMESPACE(common)
-ZOOFARI_BEGIN_NAMESPACE(core)
 
 /** \addtogroup common
  *	@{
@@ -19,10 +17,16 @@ class CCreate
 {
 	ZOOFARI_COPY_PROTECT(CCreate);
 public:
+	explicit CCreate();
+
 	template <typename... TArgs>
 	explicit CCreate(TArgs &&... inArg);
 
+	CCreate(CCreate && inOther);
+
 	~CCreate();
+
+	CCreate & operator=(CCreate && inOther);
 
 	TPtr* Release();
 
@@ -32,8 +36,6 @@ private:
 
 /** @} */
 
-ZOOFARI_END_NAMESPACE()
-ZOOFARI_END_NAMESPACE()
 ZOOFARI_END_NAMESPACE()
 
 #include ZOOFARI_INCLUDE(CCreate.inl)

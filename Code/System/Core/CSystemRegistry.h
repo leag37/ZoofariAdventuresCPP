@@ -5,6 +5,7 @@
 #include "Core/ZoofariCore.h"
 
 #include ZOOFARI_INCLUDE(CSingleton.h)
+#include ZOOFARI_INCLUDE(Core/CPtr.h)
 #include ZOOFARI_INCLUDE(Core/CUniquePtr.h)
 #include ZOOFARI_INCLUDE(Core/ISystem.h)
 #include ZOOFARI_INCLUDE(Reflection/Reflection.h)
@@ -21,20 +22,18 @@ ZOOFARI_BEGIN_NAMESPACE(core)
 class CSystemRegistry : public CSingleton<CSystemRegistry>
 {
 public:
-	template <class TSystem>
-	common::core::CUniquePtr<TSystem> const & GetSystem() const;
-
-	template <class TSystem>
-	common::core::CUniquePtr<TSystem> const & CreateSystem();
-
-private:
 	CSystemRegistry();
 
 	virtual ~CSystemRegistry();
 
+	//template <class TSystem>
+	//CPtr<TSystem> const GetSystem() const;
+
+	template <class TSystem>
+	CPtr<TSystem> const CreateSystem();
+
 private:
-    // TODO: change to unordered_map and to u64
-	unordered_map<u64, common::core::CUniquePtr<system::core::ISystem>> m_Systems;
+	unordered_map<u64, CUniquePtr<ISystem>> m_Systems;
 	
 };
 
